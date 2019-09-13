@@ -6,13 +6,30 @@
 function checkPamac()
 {
     check=$(pacman -Qs pamac-gtk)
-    if [ -n "$check" ]; then
-    printf "Pamac is installed"
-    sleep 2
-    else
-    printf "Pamac is not installed, installing"
-    sleep 2
+    if [ ! -n "$check" ]; then
+    printf "\nPamac is not installed, installing right now\n"; sleep 2
     pacman -S pamac-gtk --noconfirm
+    fi
+}
+
+# Check if themes are on ~/.themes and ~/.icons
+function checkThemes()
+{
+    themes=$(ls -A $HOME/.themes)
+    icons=$(ls -A $HOME/.icons)
+    if [ ! -n "$themes" ] && [  ! -n "$icons" ]; then
+    printf "You don't have themes installed, installing right now"; sleep 2
+    else
+    printf ""; sleep 2
+    fi
+}
+
+# Check if user is root, if not, login as root
+function checkUser()
+{
+    if [ "$UID" != "0" ]; then
+    printf "\nYou need to log as root to continue\n"; sleep 2
+    sudo -i
     fi
 }
 
@@ -32,7 +49,7 @@ function XFCE()
     # Dockbarx (taskbar), 
     # Windowck (window header buttons)
     sudo pamac install appmenu-gtk-module vala-panel-appmenu-registrar vala-panel-appmenu-xfce-gtk3 --no-confirm
-    pamac build dockbarx xfce4-dockbarx-plugin --no-confirm
+    pamac build xfce4-dockbarx-plugin xfce4-windowck-plugin --no-confirm
 
     # Remove double menus when using Vala Panel Appmenu
     xfconf-query -c xsettings -p /Gtk/ShellShowsMenubar -n -t bool -s true
@@ -42,11 +59,8 @@ function XFCE()
     xfconf-query -c xsettings -p /Net/IconThemeName -s "Xenlism-Wildfire"
     xfconf-query -c xsettings --create -p /Net/FallbackIconTheme -t "string" -s "Papirus-Maia"
     xfconf-query -c xsettings -p /Net/ThemeName -s "Flat-Remix-GTK-Green-Darker"
-    xfconf-query -c xfwm4 -p /general/theme -s "Flat-Remix-GTK-Green-Darker"
-    xfconf-query -c xfce4-notifyd -p /theme -s "Plata-Lumine"
-
-    # Session and Startup > Advanced > Launch GNOME services on startup
-    xfconf-query -c xfce4-session -p /compat/LaunchGNOME -s false
+    xfconf-query -c xfwm4 -p /general/theme -s "Flat-Remix-GTK-Green-Dark"
+    xfconf-query -c xfce4-notifyd -p /theme -s "Plata"
 
     # Remove unnecessary stuff
     sudo pamac remove pidgin blueman xfce4-taskmanager xfburn xfce4-dict htop hexchat vulkan-radeon lib32-vulkan-radeon hplip --no-confirm
@@ -62,6 +76,7 @@ function KDE()
     # Remove unnecessary stuff
     sudo pamac remove yakuake spectacle skanlite vulkan-radeon lib32-vulkan-radeon konversation kget hplip bluedevil octopi --no-confirm
 }
+
 
 #### ZRAM ####
 
@@ -92,24 +107,23 @@ exit
 
 #### Program Installation ####
 
-# Change to fasttrack mirrors
-sudo pacman-mirrors -f 5
+# Switching branch to testing
+sudo -v && sudo pacman-mirrors --api --set-branch testing
+
+# Change to fasttrack mirrors and update repositories
+sudo pacman-mirrors -f 5 && sudo pamac update --force-refresh
 
 # Check Desktop Environment
-sudo -v
-interface=$(echo $XDG_CURRENT_DESKTOP)
-if [ $interface = "XFCE" ]; then
-printf "\nYou are using XFCE\n"
-sleep 2
+if [ $XDG_CURRENT_DESKTOP == "XFCE" ]; then
+printf "\nYou are using XFCE, configuring for XFCE...\n"; sleep 2
 XFCE
 else
-printf "\nYou are using KDE\n"
-sleep 2
+printf "\nYou are using KDE, configuring for KDE...\n"; sleep 2
 KDE
 fi
 
-# Update Manjaro repositories
-sudo pamac update --force-refresh
+# Upgrade Manjaro packages
+sudo pamac upgrade --no-confirm
 
 # Themes
 sudo pamac install arc-gtk-theme adapta-gtk-theme materia-gtk-theme paper-icon-theme-git
