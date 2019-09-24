@@ -2,11 +2,6 @@
 
 Personal post installation script for Manjaro
 
-Requires git installed:
-```shell
-pacman -S git
-```
-
 Clone the repo:
 ```shell
 git clone https://github.com/MetaKomora/Manjaro-Post-Install-Script
