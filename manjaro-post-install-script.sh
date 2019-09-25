@@ -71,7 +71,7 @@ function XFCE()
 function KDE()
 {
     # Install packages for global menu on KDE and pamac
-    sudo pacman -S appmenu-gtk-module libdbusmenu-glib pamac-cli pamac-gtk --noconfirm
+    sudo pacman -S appmenu-gtk-module libdbusmenu-glib pamac-gtk --noconfirm
 
     # Remove unnecessary stuff
     sudo pamac remove yakuake spectacle skanlite vulkan-radeon lib32-vulkan-radeon konversation kget hplip bluedevil octopi --no-confirm
@@ -80,29 +80,24 @@ function KDE()
 
 #### ZRAM ####
 
-# Login as root
-sudo -i
-
 # Enable zram module
-modprobe zram
-echo zram >> /etc/modules-load.d/zram.conf
+sudo modprobe zram
+echo "zram" | sudo tee -a /etc/modules-load.d/zram.conf
 
 # Configure the number of /dev/zram devices you want
-echo "options zram num_devices=2" >> /etc/modprobe.d/zram.conf
+echo "options zram num_devices=2" | sudo tee -a /etc/modprobe.d/zram.conf
 
 # Create a udev rule
-echo 'KERNEL=="zram0", ATTR{disksize}="1G" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' >> /etc/udev/rules.d/99-zram.rules
-echo 'KERNEL=="zram1", ATTR{disksize}="1G" RUN="/usr/bin/mkswap /dev/zram1", TAG+="systemd"' >> /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram0", ATTR{disksize}="1G" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
+echo 'KERNEL=="zram1", ATTR{disksize}="1G" RUN="/usr/bin/mkswap /dev/zram1", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
 
 # Add /dev/zram to your fstab
-echo "/dev/zram0 none swap defaults 0 0" >> /etc/fstab
-echo "/dev/zram1 none swap defaults 0 0" >> /etc/fstab
+echo "/dev/zram0 none swap defaults 0 0" | sudo tee -a /etc/fstab
+echo "/dev/zram1 none swap defaults 0 0" | sudo tee -a /etc/fstab
 
 # Alter swappiness priority to 10
-echo "vm.swappiness = 10" >> /etc/sysctl.d/99-sysctl.conf
+echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 
-# Exiting root
-exit
 
 
 #### Program Installation ####
@@ -110,8 +105,8 @@ exit
 # Switching branch to testing
 sudo -v && sudo pacman-mirrors --api --set-branch testing
 
-# Change to fasttrack mirrors and update repositories
-sudo pacman-mirrors -f 5 && sudo pamac update --force-refresh
+# Change mirrors, update repositories and upgrade packages if needed
+sudo pacman-mirrors -c Brazil,United_States && sudo pamac update --force-refresh --no-confirm
 
 # Check Desktop Environment
 if [ $XDG_CURRENT_DESKTOP == "XFCE" ]; then
@@ -122,8 +117,5 @@ printf "\nYou are using KDE, configuring for KDE...\n"; sleep 2
 KDE
 fi
 
-# Upgrade Manjaro packages
-sudo pamac upgrade --no-confirm
-
 # Themes
-sudo pamac install arc-gtk-theme adapta-gtk-theme materia-gtk-theme paper-icon-theme-git
+sudo pamac install arc-gtk-theme adapta-gtk-theme materia-gtk-theme paper-icon-theme-git --no-confirm
