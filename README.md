@@ -11,5 +11,5 @@ Enter directory, give execute permission and execute:
 ```shell
 cd Manjaro-Post-Install-Script/
 chmod +x manjaro-post-install-script.sh
-sudo ./manjaro-post-install-script.sh
+bash ./manjaro-post-install-script.sh
 ```
