@@ -2,35 +2,23 @@
 
 #### Functions ####
 
-# Check if pamac installed, if isn't, install it
-function checkPamac()
+# Check local themes and install if needed
+function installThemes()
 {
-    check=$(pacman -Qs pamac-gtk)
-    if [ ! -n "$check" ]; then
-    printf "\nPamac is not installed, installing right now\n"; sleep 2
-    pacman -S pamac-gtk --noconfirm
-    fi
-}
-
-# Check if themes are on ~/.themes and ~/.icons
-function checkThemes()
-{
-    themes=$(ls -A $HOME/.themes)
-    icons=$(ls -A $HOME/.icons)
+    themes=$(ls -A $HOME/.themes);
+    icons=$(ls -A $HOME/.icons);
     if [ ! -n "$themes" ] && [  ! -n "$icons" ]; then
-    printf "You don't have themes installed, installing right now"; sleep 2
-    else
-    printf ""; sleep 2
-    fi
-}
 
-# Check if user is root, if not, login as root
-function checkUser()
-{
-    if [ "$UID" != "0" ]; then
-    printf "\nYou need to log as root to continue\n"; sleep 2
-    sudo -i
+        printf "You don't have local themes, installing globally right now"; sleep 2
+        zenity --warning --text "Type your password to proceed! ";
+        pamac build flat-remix flat-remix-gtk xenlism-wildfire-icon-theme-git oranchelo-icon-theme --no-confirm
+    
+    else
+        printf "you have themes"; sleep 2;
     fi
+    sudo pamac install arc-gtk-theme adapta-gtk-theme materia-gtk-theme paper-icon-theme-git --no-confirm;
+
+
 }
 
 # Configurations and programs for XFCE environment
@@ -39,11 +27,11 @@ function XFCE()
     # Window Manager Tweaks > Accessibility > Hide frame of windows when maximized
     # Hide title of windows when maximized
     xfconf-query -c xfwm4 -p /general/titleless_maximize -s true
-    xfconf-query -c xfwm4 -p /general/borderless_maximize -s true
+    #xfconf-query -c xfwm4 -p /general/borderless_maximize -s true
 
     # Window Manager > Button layout
-    xfconf-query -c xfwm4 -p /general/button_layout -s 'CHM|'
-    xfconf-query -c xsettings -p /Gtk/DecorationLayout -s "close,minimize,maximize:"
+    xfconf-query -c xfwm4 -p /general/button_layout -s 'CHM|O'
+    #xfconf-query -c xsettings -p /Gtk/DecorationLayout -s "close,minimize,maximize:"
 
     # Vala Panel Appmenu (global menu for XFCE), 
     # Dockbarx (taskbar), 
@@ -62,6 +50,17 @@ function XFCE()
     xfconf-query -c xfwm4 -p /general/theme -s "Flat-Remix-GTK-Green-Dark"
     xfconf-query -c xfce4-notifyd -p /theme -s "Plata"
 
+    # Set desktop wallpaper, hide icons
+    xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorLVDS1/workspace0/last-image -s /home/mateus/Pictures/Wallpapers/Pexels/clouds-dawn-desktop-backgrounds-46253.jpg
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-filesystem -s false
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-home -s false
+    xfconf-query -c xfce4-desktop -p /desktop-icons/file-icons/show-trash -s false
+
+    # Set keyboard shorcuts
+    xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Primary><Alt>t" -s xfce4-terminal
+    xfconf-query -c xfce4-keyboard-shortcuts --create -p "/commands/custom/<Shift><Alt>k" --type string -s "flameshot gui"
+
+
     # Remove unnecessary stuff
     sudo pamac remove pidgin blueman xfce4-taskmanager xfburn xfce4-dict htop hexchat vulkan-radeon lib32-vulkan-radeon hplip --no-confirm
 
@@ -71,14 +70,17 @@ function XFCE()
 function KDE()
 {
     # Install packages for global menu on KDE and pamac
-    sudo pacman -S appmenu-gtk-module libdbusmenu-glib pamac-gtk --noconfirm
+    sudo pamac install appmenu-gtk-module libdbusmenu-glib --noconfirm
 
     # Remove unnecessary stuff
-    sudo pamac remove yakuake spectacle skanlite vulkan-radeon lib32-vulkan-radeon konversation kget hplip bluedevil octopi --no-confirm
+    sudo pamac remove yakuake spectacle skanlite vulkan-radeon lib32-vulkan-radeon konversation kget hplip bluedevil --no-confirm
 }
 
 
 #### ZRAM ####
+
+# do a function to check if zram is already configured on system
+# if not returns zram: [ $(cat /etc/fstab | grep /dev/zram) ] || printf "\nInstalling ZRAM";
 
 # Enable zram module
 sudo modprobe zram
@@ -102,11 +104,12 @@ echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 
 #### Program Installation ####
 
-# Switching branch to testing
-sudo -v && sudo pacman-mirrors --api --set-branch testing
+# Change mirrors and switch branch to testing
+sudo pacman-mirrors -c Brazil,United_States && sudo -v && sudo pacman-mirrors --api --set-branch testing
 
-# Change mirrors, update repositories and upgrade packages if needed
-sudo pacman-mirrors -c Brazil,United_States && sudo pamac update --force-refresh --no-confirm
+
+# update repositories and upgrade packages if needed
+sudo pamac update --force-refresh --no-confirm
 
 # Check Desktop Environment
 if [ $XDG_CURRENT_DESKTOP == "XFCE" ]; then
@@ -116,6 +119,3 @@ else
 printf "\nYou are using KDE, configuring for KDE...\n"; sleep 2
 KDE
 fi
-
-# Themes
-sudo pamac install arc-gtk-theme adapta-gtk-theme materia-gtk-theme paper-icon-theme-git --no-confirm
