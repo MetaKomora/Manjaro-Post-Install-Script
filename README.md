@@ -2,14 +2,7 @@
 
 Personal post installation script for Manjaro
 
-Clone the repo:
+Clone the script and execute with:
 ```shell
-git clone https://github.com/MetaKomora/Manjaro-Post-Install-Script
-```
-
-Enter directory, give execute permission and execute:
-```shell
-cd Manjaro-Post-Install-Script/
-chmod +x manjaro-post-install-script.sh
-bash ./manjaro-post-install-script.sh
+curl -Ssf https://raw.githubusercontent.com/MetaKomora/Manjaro-Post-Install-Script/master/manjaro-post-install-script.sh | sh
 ```
