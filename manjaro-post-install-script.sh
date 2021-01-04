@@ -7,7 +7,12 @@ wallpapersdir""
 [[ "$XDG_SESSION_DESKTOP" == "i3" ]] && xrandr --output LVDS-1 --brightness 0.50
 
 # if the mirrors branch is not testing, change to it
-[[ $(pacman-mirrors -G) != "testing" ]] && sudo pacman-mirrors -c Brazil,United_States --api -B testing -P https -m rank
+[[ $(pacman-mirrors -G) != "testing" ]] && {
+
+	sudo pacman-mirrors -c Brazil,United_States --api -B testing -P https -m rank
+	sudo pamac update --force-refresh --no-confirm
+
+}
 
 # if Desktop Environment is XFCE, install Dockbarx plugin
 [[ "$XDG_SESSION_DESKTOP" == "xfce" ]] && {
@@ -104,7 +109,7 @@ function printMessage() {
 
 
 printf "\n\n\e[032;1mInstalling Programs\e[m\n\n"; sleep 2;
-sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm shellcheck flameshot hardinfo neofetch bpytop catfish mlocate gnome-system-monitor gnome-disk-utility gnome-calculator firefox firefox-i18n-pt-br thunderbird thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro retroarch discord zsh ttf-meslo-nerd-font-powerlevel10k wget bat lsd git github-cli mpv ttf-dejavu ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
+sudo pamac install materia-gtk-theme papirus-maia-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm shellcheck flameshot hardinfo neofetch bpytop catfish mlocate gnome-system-monitor gnome-disk-utility gnome-calculator firefox firefox-i18n-pt-br thunderbird thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro retroarch discord zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
 
 
 function cpThemesWallpapers() {
@@ -175,7 +180,7 @@ echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 
 
 printf "\n\n\e[032;1mRemoving packages, orphan packages and clean pamac cache\e[m\n\n"; sleep 2;
-sudo pamac remove -o manjaro-zsh-config nano vi xfce4-clipman-plugin --no-confirm;
+sudo pamac remove -o manjaro-zsh-config nano vi xfce4-clipman-plugin jre-openjdk --no-confirm;
 sudo pamac clean --no-confirm;
 sudo pamac clean -b --no-confirm;
 
@@ -189,7 +194,7 @@ sudo update-grub
 
 function zshTheming() {
 
-	printMessage "$1"
+	printMessage "$1"	
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 	echo "zmodule romkatv/powerlevel10k" >> ~/.zimrc
 	zimfw install
@@ -203,7 +208,7 @@ zshTheming "ZIMfw and powerlevel10k"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git recoll mtools exfat-utils lxsession-gtk3 dunst deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus noto-fonts noto-fonts-emoji ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging kdeconnect bat lsd dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full unrar selene-media-converter shellcheck yad xdman
+# alacarte fsearch-git recoll mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus noto-fonts noto-fonts-emoji ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full unrar selene-media-converter shellcheck yad xdman
 
 
 # More information:
@@ -218,3 +223,4 @@ zshTheming "ZIMfw and powerlevel10k"
 # https://www.linuxuprising.com/2020/09/how-to-enable-echo-noise-cancellation.html
 # https://wiki.manjaro.org/index.php/Set_all_Qt_app%27s_to_use_GTK%2B_font_%26_theme_settings
 # https://unix.stackexchange.com/questions/6345/how-can-i-get-distribution-name-and-version-number-in-a-simple-shell-script
+# https://gist.github.com/jwebcat/5122366
