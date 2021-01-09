@@ -109,7 +109,7 @@ function printMessage() {
 
 
 printf "\n\n\e[032;1mInstalling Programs\e[m\n\n"; sleep 2;
-sudo pamac install materia-gtk-theme papirus-maia-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm shellcheck flameshot hardinfo neofetch bpytop catfish mlocate gnome-system-monitor gnome-disk-utility gnome-calculator firefox firefox-i18n-pt-br thunderbird thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro retroarch discord zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
+sudo pamac install materia-gtk-theme papirus-maia-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop catfish mlocate gnome-system-monitor gnome-disk-utility gnome-calculator firefox firefox-i18n-pt-br thunderbird thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro retroarch zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
 
 
 function cpThemesWallpapers() {
@@ -208,7 +208,7 @@ zshTheming "ZIMfw and powerlevel10k"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git recoll mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus noto-fonts noto-fonts-emoji ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full unrar selene-media-converter shellcheck yad xdman
+# alacarte fsearch-git recoll mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus noto-fonts noto-fonts-emoji ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full unrar selene-media-converter yad xdman
 
 
 # More information:
