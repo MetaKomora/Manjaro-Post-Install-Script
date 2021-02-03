@@ -12,6 +12,9 @@ function printMessage() {
 	xrandr --output LVDS-1 --brightness 0.50
 	sudo pamac install otf-font-awesome --no-confirm
 
+	git clone https://github.com/dracula/rofi
+	cp rofi/config.rasi ~/.config/rofi
+
 }
 
 # if the mirrors branch is not testing, change to it
@@ -107,7 +110,8 @@ function printMessage() {
 	xfconf-query -c xfce4-screensaver -n -p /screensavers/xfce-personal-slideshow/location -t string -s "$wallpapersdir"
 	xfconf-query -c xfce4-screensaver -n -p /lock/enabled -t bool -s true
 	xfconf-query -c xfce4-screensaver -n -p /lock/saver-activation/delay -t int -s 10
-	
+
+	cd /usr/share/themes && sudo rm -rf Daloa Bright Default-hdpi Default-xhdpi Kokodi Moheli Retro Smoke "ZOMG-PONIES!"
 	
 }
 
