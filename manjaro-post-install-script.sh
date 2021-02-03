@@ -1,10 +1,18 @@
 #!/bin/bash
 
 snapshotsdir=""
-wallpapersdir""
+wallpapersdir=""
+
+function printMessage() {
+	printf "\n\n\e[032;1m$1\e[m\n\n"; sleep 2;
+}
 
 # Low brightness level on i3 gaps
-[[ "$XDG_SESSION_DESKTOP" == "i3" ]] && xrandr --output LVDS-1 --brightness 0.50
+[[ "$XDG_SESSION_DESKTOP" == "i3" ]] && {
+	xrandr --output LVDS-1 --brightness 0.50
+	sudo pamac install otf-font-awesome --no-confirm
+
+}
 
 # if the mirrors branch is not testing, change to it
 [[ $(pacman-mirrors -G) != "testing" ]] && {
@@ -17,7 +25,7 @@ wallpapersdir""
 # if Desktop Environment is XFCE, install Dockbarx plugin
 [[ "$XDG_SESSION_DESKTOP" == "xfce" ]] && {
 
-	printf "\n\n\n\e[032;1mInstalling XFCE addons from AUR\e[m\n\n\n"; sleep 3;
+	printMessage "You are using XFCE. Installing xfce4-dockbarx-plugin and configuring environment"
 	sudo pamac build xfce4-dockbarx-plugin --no-confirm
 
 	# Set keyboard shorcuts
@@ -103,92 +111,97 @@ wallpapersdir""
 	
 }
 
-function printMessage() {
-	printf "\n\n\e[032;1m$1\e[m\n\n"; sleep 2;
+function installPrograms() {
+	printMessage "$1"
+
+	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop gnome-system-monitor gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
+	
 }
-
-
-printf "\n\n\e[032;1mInstalling Programs\e[m\n\n"; sleep 2;
-sudo pamac install materia-gtk-theme papirus-maia-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop catfish mlocate gnome-system-monitor gnome-disk-utility gnome-calculator firefox firefox-i18n-pt-br thunderbird thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro retroarch zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
-
 
 function cpThemesWallpapers() {
 	printMessage "$1"
-	printf "\n\n\e[032;1mCopying themes, icons and wallpapers to /usr/share/ subdirectories to use globally\e[m\n\n"; sleep 2;
 	
 	sudo cp -r $HOME/.themes/* /usr/share/themes
 	sudo cp -r $HOME/.icons/* /usr/share/icons
 	[[ ! -d /usr/share/backgrounds ]] && sudo mkdir /usr/share/backgrounds
-	sudo cp -r "$wallpapersdir"/* /usr/share/backgrounds || printf "\nWallpapers Directory not set or not found. Skipping\n"
+	if [[ -d "$wallpapersdir" ]]; then
+		sudo cp -r "$wallpapersdir"/* /usr/share/backgrounds
+	else
+		printf "\n\e[031;1mWallpapers directory not set or not found. Skipping copy\e[m\n"
+	fi
+}
+
+function vscodeExtensions() {
+	printMessage "$1"
+	
+	code --install-extension alexcvzz.vscode-sqlite
+	code --install-extension dracula-theme.theme-dracula
+	code --install-extension jpoissonnier.vscode-styled-components
+	code --install-extension PKief.material-icon-theme
+}
+
+function userEnvironmentSetup() {
+
+	printMessage "$1"
+	
+	xdg-user-dirs-update
+	xdg-mime default micro.desktop text/plain
+	xdg-mime default micro.desktop text/markdown
+	xdg-mime default org.gnome.Evince.desktop application/pdf
+	
+	[[ ! -d $HOME/.local/bin ]] && mkdir $HOME/.local/bin;
+	cd $HOME/.local/bin;
+	wget https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus;
+	wget https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv;
+	chmod +x ytdl-opus ytmpv
+	
+	
+	printMessage "Creating directory for appimages"
+	[[ ! -d $HOME/Programas ]] && mkdir $HOME/Programas;
+	# insomnia - https://github.com/Kong/insomnia/releases
+	# freetube - https://github.com/FreeTubeApp/FreeTube/releases
+	# marktext - https://github.com/marktext/marktext/releases
+}
+
+function enableEchoCancel() {
+	printMessage "$1"
+
+	printf "\nload-module module-echo-cancel source_name=noiseless\nset-default-source noiseless" | sudo tee -a /etc/pulse/default.pa
+	pulseaudio -k
+}
+
+function enableZRAM() {
+
+	printMessage "$1"
+	
+	# Enable zram module
+	sudo modprobe zram
+	echo "zram" | sudo tee -a /etc/modules-load.d/zram.conf
+	
+	# Configure the number of /dev/zram devices you want
+	echo "options zram num_devices=2" | sudo tee -a /etc/modprobe.d/zram.conf
+	
+	# Create a udev rule. Change ATTR{disksize} to your needs
+	echo 'KERNEL=="zram0", ATTR{disksize}="2G" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
+	echo 'KERNEL=="zram1", ATTR{disksize}="2G" RUN="/usr/bin/mkswap /dev/zram1", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
+	
+	# Add /dev/zram to your fstab
+	echo "/dev/zram0 none swap defaults 0 0" | sudo tee -a /etc/fstab
+	echo "/dev/zram1 none swap defaults 0 0" | sudo tee -a /etc/fstab
+	
+	# Alter swappiness priority to 5
+	echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 }
 
 
 
-printf "\n\n\e[032;1mInstalling VSCode extensions\e[m\n\n"; sleep 2;
-code --install-extension alexcvzz.vscode-sqlite
-code --install-extension dracula-theme.theme-dracula
-code --install-extension jpoissonnier.vscode-styled-components
-code --install-extension PKief.material-icon-theme
 
-
-# Generate user dirs, set programs for some filetypes 
-# and create .local/bin for my personal scripts from Github
-xdg-user-dirs-update
-xdg-mime default micro.desktop text/plain
-xdg-mime default micro.desktop text/markdown
-xdg-mime default org.gnome.Evince.desktop application/pdf
-
-[[ ! -d $HOME/.local/bin ]] && mkdir $HOME/.local/bin;
-cd $HOME/.local/bin; 
-wget https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus;
-wget https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv;
-chmod +x ytdl-opus ytmpv
-
-
-printf "\n\n\e[032;1mCreating directory for Appimages\e[m\n\n"; sleep 2;
-[[ ! -d $HOME/Programas ]] && mkdir $HOME/Programas;
-# insomnia - https://github.com/Kong/insomnia/releases
-# freetube - https://github.com/FreeTubeApp/FreeTube/releases
-# marktext - https://github.com/marktext/marktext/releases
-
-
-printf "\n\n\e[032;1mEnabling Pulseaudio echo-cancel module\e[m\n\n"; sleep 2;
-printf "\nload-module module-echo-cancel source_name=noiseless\nset-default-source noiseless" | sudo tee -a /etc/pulse/default.pa
-pulseaudio -k
-
-
-printf "\n\n\e[032;1mConfiguring ZRAM\e[m\n\n"; sleep 3;
-# Enable zram module
-sudo modprobe zram
-echo "zram" | sudo tee -a /etc/modules-load.d/zram.conf
-
-# Configure the number of /dev/zram devices you want
-echo "options zram num_devices=2" | sudo tee -a /etc/modprobe.d/zram.conf
-
-# Create a udev rule. Change ATTR{disksize} to your needs
-echo 'KERNEL=="zram0", ATTR{disksize}="2G" RUN="/usr/bin/mkswap /dev/zram0", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
-echo 'KERNEL=="zram1", ATTR{disksize}="2G" RUN="/usr/bin/mkswap /dev/zram1", TAG+="systemd"' | sudo tee -a /etc/udev/rules.d/99-zram.rules
-
-# Add /dev/zram to your fstab
-echo "/dev/zram0 none swap defaults 0 0" | sudo tee -a /etc/fstab
-echo "/dev/zram1 none swap defaults 0 0" | sudo tee -a /etc/fstab
-
-# Alter swappiness priority to 5
-echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
-
-
-
-
-printf "\n\n\e[032;1mRemoving packages, orphan packages and clean pamac cache\e[m\n\n"; sleep 2;
-sudo pamac remove -o manjaro-zsh-config nano vi xfce4-clipman-plugin jre-openjdk --no-confirm;
-sudo pamac clean --no-confirm;
-sudo pamac clean -b --no-confirm;
-
-
-# If there is a BTRFS snapshots subvolume dir in the variable, create a snapshot and update GRUB
-[[ -d "$snapshotsdir" ]] && { 
-sudo btrfs subvolume snapshot / "$snapshotsdir"/@/post_install__-__"$(date '+%d-%m-%Y_-_%R')"
-sudo update-grub 
+function cleanPackages() {
+	printMessage "$1"
+	
+	sudo pamac remove -o manjaro-zsh-config nano vi --no-confirm;
+	sudo pamac clean --no-confirm;
+	sudo pamac clean -b --no-confirm;
 }
 
 
@@ -197,18 +210,42 @@ function zshTheming() {
 	printMessage "$1"	
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 	echo "zmodule romkatv/powerlevel10k" >> ~/.zimrc
-	zimfw install
 	echo 'export QT_QPA_PLATFORMTHEME="qt5ct"' >> ~/.zshenv
+
+	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
 }
 
-zshTheming "ZIMfw and powerlevel10k"
+installPrograms "Installing Programs"
 
+cpThemesWallpapers "Copying themes, icons and wallpapers to /usr/share/ subdirectories to use globally"
+
+vscodeExtensions "Installing VSCode extensions"
+
+userEnvironmentSetup "Creating user directories, downloading personal scripts and setting default applications"
+
+enableEchoCancel "Enabling Pulseaudio echo-cancel module"
+
+enableZRAM "Enabling and configuring ZRAM"
+
+cleanPackages "Removing packages, orphan packages and pamac cache"
+
+
+# If there is a BTRFS snapshots subvolume dir in the variable, create a snapshot and update GRUB
+[[ -d "$snapshotsdir" ]] && {
+	sudo btrfs subvolume snapshot / "$snapshotsdir"/@/post_install__-__"$(date '+%d-%m-%Y_-_%R')"
+	sudo update-grub 
+}
+
+
+zshTheming "Installing ZIMfw and powerlevel10k theme"
+
+printMessage "Please, reboot system to apply changes"
 
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git recoll mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus noto-fonts noto-fonts-emoji ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full unrar selene-media-converter yad xdman
+# alacarte fsearch-git catfish mlocate mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full selene-media-converter yad xdman
 
 
 # More information:
