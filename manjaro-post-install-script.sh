@@ -13,6 +13,7 @@ function printMessage() {
 	sudo pamac install otf-font-awesome --no-confirm
 
 	git clone https://github.com/dracula/rofi
+	mkdir $HOME/.config/rofi
 	cp rofi/config.rasi ~/.config/rofi
 
 }
