@@ -119,7 +119,7 @@ function printMessage() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop gnome-system-monitor gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
+	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins deluge-gtk persepolis foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop gnome-system-monitor gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
 	
 }
 
@@ -215,7 +215,7 @@ function zshTheming() {
 	printMessage "$1"	
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 	echo "zmodule romkatv/powerlevel10k" >> ~/.zimrc
-	echo 'export QT_QPA_PLATFORMTHEME="qt5ct"' >> ~/.zshenv
+	echo 'export QT_QPA_PLATFORMTHEME="qt5ct"' >> ~/.profile
 
 	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
