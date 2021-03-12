@@ -1,8 +1,5 @@
 #!/bin/bash
 
-snapshotsdir=""
-wallpapersdir=""
-
 function printMessage() {
 	printf "\n\n\e[032;1m$1\e[m\n\n"; sleep 2;
 }
@@ -117,6 +114,18 @@ function printMessage() {
 	
 }
 
+function setVariables() {
+	wallpapersdir=""
+	snapshotsdir=""
+
+	printf "\nPlease, insert your wallpapers directory:\n"
+	read wallpapersdir
+
+	printf "\nPlease, insert your snapshots directory:\n"
+	read snapshotsdir
+	
+}
+
 function installPrograms() {
 	printMessage "$1"
 
@@ -199,9 +208,6 @@ function enableZRAM() {
 	echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 }
 
-
-
-
 function cleanPackages() {
 	printMessage "$1"
 	
@@ -209,7 +215,6 @@ function cleanPackages() {
 	sudo pamac clean --no-confirm;
 	sudo pamac clean -b --no-confirm;
 }
-
 
 function zshTheming() {
 
@@ -221,6 +226,8 @@ function zshTheming() {
 	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
 }
+
+setVariables
 
 installPrograms "Installing Programs"
 
@@ -239,8 +246,9 @@ cleanPackages "Removing packages, orphan packages and pamac cache"
 
 # If there is a BTRFS snapshots subvolume dir in the variable, create a snapshot and update GRUB
 [[ -d "$snapshotsdir" ]] && {
+	sudo mkdir "$snapshotsdir"/{@,@home}
 	sudo btrfs subvolume snapshot / "$snapshotsdir"/@/post_install__-__"$(date '+%d-%m-%Y_-_%R')"
-	sudo update-grub 
+	sudo update-grub
 }
 
 
@@ -251,7 +259,7 @@ printMessage "Please, reboot system to apply changes"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git catfish mlocate mtools exfat-utils lxsession-gtk3 dunst notify-osd deadd-notification-center-bin clipit xfce4-clipman-plugin polybar calibre zeal nnn cmus ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer indicator-stickynotes safeeyes screenkey soundconverter p7zip-full selene-media-converter yad xdman
+# alacarte fsearch-git catfish mlocate mtools exfat-utils lxsession-gtk3 deadd-notification-center-bin xfce4-clipman-plugin polybar calibre zeal nnn cmus ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer screenkey soundconverter p7zip-full selene-media-converter xdman
 
 
 # More information:
