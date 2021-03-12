@@ -15,6 +15,7 @@ function printMessage() {
 	git clone https://github.com/dracula/rofi
 	mkdir $HOME/.config/rofi
 	cp rofi/config.rasi ~/.config/rofi
+	rm -rf rofi
 
 }
 
