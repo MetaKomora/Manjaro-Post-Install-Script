@@ -11,7 +11,7 @@ function printMessage() {
 
 	git clone https://github.com/dracula/rofi
 	mkdir $HOME/.config/rofi
-	cp rofi/config.rasi ~/.config/rofi
+	cp rofi/config.rasi $HOME/.config/rofi
 	rm -rf rofi
 
 }
@@ -146,13 +146,21 @@ function cpThemesWallpapers() {
 	fi
 }
 
-function vscodeExtensions() {
+function devEnvironmentSetup() {
 	printMessage "$1"
-	
+
+	printf "\nInstalling VSCode extensions\n"
 	code --install-extension alexcvzz.vscode-sqlite
 	code --install-extension dracula-theme.theme-dracula
 	code --install-extension jpoissonnier.vscode-styled-components
 	code --install-extension PKief.material-icon-theme
+
+	printf "\nInstalling NVM, latest node LTS and yarn\n"
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
+	printf '\nexport NVM_DIR="$HOME/.nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.zprofile
+	source $HOME/.zprofile
+	nvm install --lts
+	npm install -g yarn
 }
 
 function userEnvironmentSetup() {
@@ -220,8 +228,8 @@ function zshTheming() {
 
 	printMessage "$1"	
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
-	echo "zmodule romkatv/powerlevel10k" >> ~/.zimrc
-	echo 'export QT_QPA_PLATFORMTHEME="qt5ct"' >> ~/.profile
+	printf "zmodule romkatv/powerlevel10k" >> $HOME/.zimrc
+	printf '\nexport QT_QPA_PLATFORMTHEME="qt5ct"\n' >> $HOME/.zprofile
 
 	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
@@ -233,7 +241,7 @@ installPrograms "Installing Programs"
 
 cpThemesWallpapers "Copying themes, icons and wallpapers to /usr/share/ subdirectories to use globally"
 
-vscodeExtensions "Installing VSCode extensions"
+devEnvironmentSetup "Installing development tools"
 
 userEnvironmentSetup "Creating user directories, downloading personal scripts and setting default applications"
 
@@ -248,6 +256,7 @@ cleanPackages "Removing packages, orphan packages and pamac cache"
 [[ -d "$snapshotsdir" ]] && {
 	sudo mkdir "$snapshotsdir"/{@,@home}
 	sudo btrfs subvolume snapshot / "$snapshotsdir"/@/post_install__-__"$(date '+%d-%m-%Y_-_%R')"
+	sudo btrfs subvolume snapshot /home "$snapshotsdir"/@home/post_install__-__"$(date '+%d-%m-%Y_-_%R')"
 	sudo update-grub
 }
 
