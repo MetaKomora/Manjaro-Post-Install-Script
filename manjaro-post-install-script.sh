@@ -129,7 +129,11 @@ function setVariables() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs lightdm-gtk-greeter-settings ventoy appimagelauncher xfce4-notifyd brightnessctl polkit-gnome --no-confirm
+	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs lightdm-gtk-greeter-settings pamac-flatpak-plugin ventoy appimagelauncher xfce4-notifyd brightnessctl polkit-gnome --no-confirm
+
+	printf "export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\n" >> $HOME/.zprofile
+	sudo flatpak override --env=GTK_THEME=Dracula
+	flatpak install telegram freetube libreoffice -y
 	
 }
 
@@ -174,16 +178,15 @@ function userEnvironmentSetup() {
 	
 	[[ ! -d $HOME/.local/bin ]] && mkdir $HOME/.local/bin;
 	cd $HOME/.local/bin;
-	wget https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus;
-	wget https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv;
+	curl https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus -o ytdl-opus;
+	curl https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv -o ytmpv;
 	chmod +x ytdl-opus ytmpv
 	
 	
 	printMessage "Creating directory for appimages"
 	[[ ! -d $HOME/Programas ]] && mkdir $HOME/Programas;
 	# insomnia - https://github.com/Kong/insomnia/releases
-	# freetube - https://github.com/FreeTubeApp/FreeTube/releases
-	# marktext - https://github.com/marktext/marktext/releases
+	
 }
 
 function enableEchoCancel() {
@@ -268,7 +271,7 @@ printMessage "Please, reboot system to apply changes"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git catfish mlocate exfat-utils usbutils pamixer deadd-notification-center-bin xfce4-clipman-plugin polybar calibre man-db zeal nnn cmus opus-tools otf-font-awesome gpick audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug
+# alacarte fsearch-git catfish mlocate exfat-utils usbutils pamixer deadd-notification-center-bin xfce4-clipman-plugin polybar calibre man-db zeal nnn cmus figlet opus-tools otf-font-awesome gpick audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie dmidecode gdu baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug
 
 
 # More information:
