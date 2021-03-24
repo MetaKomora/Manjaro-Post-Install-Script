@@ -129,7 +129,7 @@ function setVariables() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 nodejs-lts-fermium npm flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio opus-tools youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh wget git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools usbutils android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs timeshift lightdm-gtk-greeter-settings bootsplash-theme-manjaro ventoy inxi appimagelauncher xfce4-notifyd xfce4-power-manager polkit-gnome --no-confirm
+	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs lightdm-gtk-greeter-settings ventoy appimagelauncher xfce4-notifyd brightnessctl polkit-gnome --no-confirm
 	
 }
 
@@ -259,7 +259,7 @@ printMessage "Please, reboot system to apply changes"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git catfish mlocate mtools exfat-utils lxsession-gtk3 pamixer deadd-notification-center-bin xfce4-clipman-plugin polybar calibre zeal nnn cmus ttf-fira-code otf-font-awesome gpick audacity mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer screenkey soundconverter p7zip-full selene-media-converter xdman persepolis deluge-gtk ytfzf-git fzf ueberzug
+# alacarte fsearch-git catfish mlocate exfat-utils usbutils pamixer deadd-notification-center-bin xfce4-clipman-plugin polybar calibre man-db zeal nnn cmus opus-tools otf-font-awesome gpick audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie dmidecode baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug
 
 
 # More information:
@@ -269,7 +269,6 @@ printMessage "Please, reboot system to apply changes"
 # https://unix.stackexchange.com/questions/453585/shell-script-to-comment-and-uncomment-a-line-in-file
 # https://linuxize.com/post/how-to-add-directory-to-path-in-linux/
 # https://github.com/ytdl-org/youtube-dl#installation
-# https://github.com/romkatv/powerlevel10k#oh-my-zsh
 # https://diolinux.com.br/2019/09/remover-ruido-do-microfone-no-linux.html
 # https://www.linuxuprising.com/2020/09/how-to-enable-echo-noise-cancellation.html
 # https://wiki.manjaro.org/index.php/Set_all_Qt_app%27s_to_use_GTK%2B_font_%26_theme_settings
