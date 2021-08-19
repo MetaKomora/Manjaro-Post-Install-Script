@@ -9,17 +9,12 @@ function printMessage() {
 	xrandr --output LVDS-1 --brightness 0.50
 	sudo pamac install otf-font-awesome --no-confirm
 
-	git clone https://github.com/dracula/rofi
-	mkdir $HOME/.config/rofi
-	cp rofi/config.rasi $HOME/.config/rofi
-	rm -rf rofi
-
 }
 
 # if the mirrors branch is not testing, change to it
-[[ $(pacman-mirrors -G) != "testing" ]] && {
+[[ $(pacman-mirrors -G) != "unstable" ]] && {
 
-	sudo pacman-mirrors -c Brazil,United_States --api -B testing -P https -m rank
+	sudo pacman-mirrors -c United_States,Canada -a -B unstable -P https -m rank
 	sudo pamac update --force-refresh --no-confirm
 
 }
@@ -51,8 +46,8 @@ function printMessage() {
 	# XFCE Icons, GTK and WM themes
 	xfconf-query -c xsettings -p /Net/IconThemeName -s "Tela-circle-manjaro-dark";
 	xfconf-query -c xsettings -n -p /Net/FallbackIconTheme -t "string" -s "Papirus";
-	xfconf-query -c xsettings -p /Net/ThemeName -s "Dracula";
-	xfconf-query -c xfwm4 -p /general/theme -s "Dracula";
+	xfconf-query -c xsettings -p /Net/ThemeName -s "Kripton";
+	xfconf-query -c xfwm4 -p /general/theme -s "Kripton";
 	
 	# Set panel transparency in percentage (the last option), position to bottom, lock the panel, Force panel redraw by toggling background-style
 	xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-rgba -t double -t double -t double -t double -s 0.00 -s 0.00 -s 0.00 -s 0.00;
@@ -81,21 +76,17 @@ function printMessage() {
 	xfconf-query -c xfce4-notifyd -n -p /log-level -t int -s 1;
 	xfconf-query -c xfce4-notifyd -n -p /log-level-apps -t int -s 0;
 	
-	# Auto mount drives and media
-	xfconf-query -c thunar-volman -n -p /automount-drives/enabled -t bool -s true;
-	xfconf-query -c thunar-volman -n -p /automount-media/enabled -t bool -s true;
-	
 	# When a window raises itself, switch to window's workspace
 	xfconf-query -c xfwm4 -n -p /general/activate_action -t string -s switch;
 	
 	# Settings Manager > Appearance > Fonts > Default Font
-	xfconf-query -c xsettings -n -p /Gtk/FontName -t string -s "DejaVu Sans Semi-Condensed 10"
+	xfconf-query -c xsettings -n -p /Gtk/FontName -t string -s "Noto Sans 10"
 	
 	# Settings Manager > Appearance > Fonts > Default Monospace Font
-	xfconf-query -c xsettings -n -p /Gtk/MonospaceFontName -t string -s "DejaVu Sans Mono 10"
+	xfconf-query -c xsettings -n -p /Gtk/MonospaceFontName -t string -s "Noto Sans Mono 10"
 	
 	# Settings Manager > Window Manager > Title Font
-	xfconf-query -c xfwm4 -n -p /general/title_font -t string -s "DejaVu Sans Bold 9"
+	xfconf-query -c xfwm4 -n -p /general/title_font -t string -s "Noto Sans Bold 9"
 	
 	# Settings Manager > Window Manager > Button Layout
 	xfconf-query -c xfwm4 -n -p /general/button_layout -t string -s "O|HMC"
@@ -115,11 +106,7 @@ function printMessage() {
 }
 
 function setVariables() {
-	wallpapersdir=""
 	snapshotsdir=""
-
-	printf "\nPlease, insert your wallpapers directory:\n"
-	read wallpapersdir
 
 	printf "\nPlease, insert your snapshots directory:\n"
 	read snapshotsdir
@@ -132,31 +119,15 @@ function installPrograms() {
 	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs lightdm-gtk-greeter-settings pamac-flatpak-plugin ventoy appimagelauncher xfce4-notifyd brightnessctl polkit-gnome --no-confirm
 
 	printf "export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\n" >> $HOME/.zprofile
-	sudo flatpak override --env=GTK_THEME=Dracula
+	sudo flatpak override --env=GTK_THEME=Kripton
 	flatpak install telegram freetube libreoffice -y
 	
-}
-
-function cpThemesWallpapers() {
-	printMessage "$1"
-	
-	sudo cp -r $HOME/.themes/* /usr/share/themes
-	sudo cp -r $HOME/.icons/* /usr/share/icons
-	[[ ! -d /usr/share/backgrounds ]] && sudo mkdir /usr/share/backgrounds
-	if [[ -d "$wallpapersdir" ]]; then
-		sudo cp -r "$wallpapersdir"/* /usr/share/backgrounds
-	else
-		printf "\n\e[031;1mWallpapers directory not set or not found. Skipping copy\e[m\n"
-	fi
 }
 
 function devEnvironmentSetup() {
 	printMessage "$1"
 
 	printf "\nInstalling VSCode extensions\n"
-	code --install-extension alexcvzz.vscode-sqlite
-	code --install-extension dracula-theme.theme-dracula
-	code --install-extension jpoissonnier.vscode-styled-components
 	code --install-extension PKief.material-icon-theme
 
 	printf "\nInstalling NVM, latest node LTS and yarn\n"
@@ -241,8 +212,6 @@ function zshTheming() {
 setVariables
 
 installPrograms "Installing Programs"
-
-cpThemesWallpapers "Copying themes, icons and wallpapers to /usr/share/ subdirectories to use globally"
 
 devEnvironmentSetup "Installing development tools"
 
