@@ -269,7 +269,7 @@ printMessage "Please, reboot system to apply changes"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte fsearch-git catfish mlocate exfat-utils usbutils pamixer deadd-notification-center-bin xfce4-clipman-plugin polybar calibre man-db zeal nnn cmus figlet opus-tools otf-font-awesome gpick audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie dmidecode gdu baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug
+# alacarte azote fsearch-git catfish mlocate exfat-utils usbutils deadd-notification-center-bin xfce4-clipman-plugin copyq polybar calibre zeal nnn bat lsd cmus figlet opus-tools pulseaudio-alsa otf-font-awesome gpick gcolor3 audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie gparted dmidecode gdu baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full unrar selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug zenity hdsentinel font-manager gucharmap wmctrl xdg-desktop-portal-gtk gnome-epub-thumbnailer wf-recorder qt5ct qt5-styleplugins hardinfo appimagelauncher
 
 
 # More information:
