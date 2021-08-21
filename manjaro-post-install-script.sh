@@ -15,6 +15,17 @@ function initialSystemSetup() {
 	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty micro pipewire-pulse brightnessctl --noconfirm --needed
 	sudo pamac build ly --no-confirm
 	sudo systemctl enable ly
+
+	# Making some directories and exporting variables to easy setup later
+	mkdir -p $HOME/.config/{zsh,zim,nvm} $HOME/.local/{bin,share}
+
+	printf "export XDG_CONFIG_HOME=$HOME/.config\n" >> $HOME/.zshenv
+	printf "export XDG_CACHE_HOME=$HOME/.cache\n" >> $HOME/.zshenv
+	printf "export XDG_DATA_HOME=$HOME/.local/share\n" >> $HOME/.zshenv
+	printf "export ZDOTDIR=$XDG_CONFIG_HOME/zsh\n" >> $HOME/.zshenv
+	printf "export HISTFILE=$XDG_CONFIG_HOME/zsh/zhistory\n" >> $HOME/.zshenv
+	printf "export ZIM_HOME=$XDG_CONFIG_HOME/zim\n" >> $HOME/.zshenv
+	
 }
 
 function setVariables() {
@@ -154,15 +165,14 @@ function installPrograms() {
 function devEnvironmentSetup() {
 	printMessage "$1"
 
-	printf "\nInstalling VSCode extensions\n"
-	code --install-extension PKief.material-icon-theme
-
-	printf "\nInstalling NVM, latest node LTS and yarn\n"
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
-	printf '\nexport NVM_DIR="$HOME/.nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.zprofile
-	source $HOME/.zprofile
+	printf "\nInstalling NVM and latest node LTS\n"
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
+	source $HOME/.config/zsh/.zshrc
 	nvm install --lts
-	npm install -g yarn
+
+	# Adding $USER to docker group to use docker rootless
+	sudo usermod -a -G docker $USER	
 }
 
 function userEnvironmentSetup() {
@@ -174,24 +184,11 @@ function userEnvironmentSetup() {
 	xdg-mime default micro.desktop text/markdown
 	xdg-mime default org.gnome.Evince.desktop application/pdf
 	
-	[[ ! -d $HOME/.local/bin ]] && mkdir $HOME/.local/bin;
-	cd $HOME/.local/bin;
+	cd $HOME/.local/bin
 	curl https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus -o ytdl-opus;
 	curl https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv -o ytmpv;
 	chmod +x ytdl-opus ytmpv
-	
-	
-	printMessage "Creating directory for appimages"
-	[[ ! -d $HOME/Programas ]] && mkdir $HOME/Programas;
-	# insomnia - https://github.com/Kong/insomnia/releases
-	
-}
-
-function enableEchoCancel() {
-	printMessage "$1"
-
-	printf "\nload-module module-echo-cancel source_name=noiseless\nset-default-source noiseless" | sudo tee -a /etc/pulse/default.pa
-	pulseaudio -k
+	cd $HOME
 }
 
 function enableZRAM() {
@@ -253,8 +250,6 @@ installPrograms "Installing Programs"
 devEnvironmentSetup "Installing development tools"
 
 userEnvironmentSetup "Creating user directories, downloading personal scripts and setting default applications"
-
-enableEchoCancel "Enabling Pulseaudio echo-cancel module"
 
 enableZRAM "Enabling and configuring ZRAM"
 
