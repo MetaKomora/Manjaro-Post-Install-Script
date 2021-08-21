@@ -183,6 +183,9 @@ function userEnvironmentSetup() {
 	xdg-mime default micro.desktop text/plain
 	xdg-mime default micro.desktop text/markdown
 	xdg-mime default org.gnome.Evince.desktop application/pdf
+
+	# Prevents xdg-utils bug which it doesn't open files with Micro on Kitty
+	ln -s /usr/bin/kitty $HOME/.local/bin/xterm
 	
 	cd $HOME/.local/bin
 	curl https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus -o ytdl-opus;
@@ -214,20 +217,16 @@ function enableZRAM() {
 	echo "vm.swappiness = 5" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
 }
 
-function cleanPackages() {
-	printMessage "$1"
-	
-	sudo pamac remove -o manjaro-zsh-config nano vi --no-confirm;
-	sudo pamac clean --no-confirm;
-	sudo pamac clean -b --no-confirm;
-}
-
 function zshTheming() {
+	printMessage "$1"
 
-	printMessage "$1"	
+	# Change shell to ZSH
+	chsh -s /bin/zsh
+	sudo chsh -s /bin/zsh
+	source $HOME/.zshenv
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
-	printf "zmodule romkatv/powerlevel10k" >> $HOME/.zimrc
-	printf '\nexport QT_QPA_PLATFORMTHEME="qt5ct"\n' >> $HOME/.zprofile
+	printf "zmodule romkatv/powerlevel10k" >> $HOME/.config/zsh/.zimrc
+	printf 'export QT_QPA_PLATFORMTHEME="qt5ct"\n' >> $HOME/.zshenv
 
 	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
@@ -252,8 +251,6 @@ devEnvironmentSetup "Installing development tools"
 userEnvironmentSetup "Creating user directories, downloading personal scripts and setting default applications"
 
 enableZRAM "Enabling and configuring ZRAM"
-
-cleanPackages "Removing packages, orphan packages and pamac cache"
 
 
 # If there is a BTRFS snapshots subvolume dir in the variable, create a snapshot and update GRUB
