@@ -4,123 +4,150 @@ function printMessage() {
 	printf "\n\n\e[032;1m$1\e[m\n\n"; sleep 2;
 }
 
-# Low brightness level on i3 gaps
-[[ "$XDG_SESSION_DESKTOP" == "i3" ]] && {
-	xrandr --output LVDS-1 --brightness 0.50
-	sudo pamac install otf-font-awesome --no-confirm
+function initialSystemSetup() {
+	printMessage "$1"
+	
+	# if the mirrors branch is not unstable, change to it
+	[[ $(pacman-mirrors -G) != "unstable" ]] && {
+		sudo pacman-mirrors -c United_States,Canada -a -B unstable -P https -m rank
+	}
 
-}
-
-# if the mirrors branch is not testing, change to it
-[[ $(pacman-mirrors -G) != "unstable" ]] && {
-
-	sudo pacman-mirrors -c United_States,Canada -a -B unstable -P https -m rank
-	sudo pamac update --force-refresh --no-confirm
-
-}
-
-# if Desktop Environment is XFCE, install Dockbarx plugin
-[[ "$XDG_SESSION_DESKTOP" == "xfce" ]] && {
-
-	printMessage "You are using XFCE. Installing xfce4-dockbarx-plugin and configuring environment"
-	sudo pamac build xfce4-dockbarx-plugin --no-confirm
-
-	# Set keyboard shorcuts
-	xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/Super_L" -t string -s "xfce4-popup-whiskermenu";
-	
-	# Disable saved sessions
-	xfconf-query -c xfce4-session -p /general/SaveOnExit -n -t bool -s false
-	
-	# Enable tap touchpad to click and change acceleration
-	xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Properties/libinput_Tapping_Enabled -t int -s 1
-	xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Acceleration -t double -s 9.0
-
-	
-	# Open new thunar instances as tabs, maximize Thunar, hide devices and etc
-	xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true;
-	xfconf-query -c thunar -n -p /last-location-bar -t string -s ThunarLocationButtons;
-	xfconf-query -c thunar -n -p /last-window-maximized -t bool -s true;
-	xfconf-query -c thunar -n -p /misc-thumbnail-mode -t string -s THUNAR_THUMBNAIL_MODE_ALWAYS;
-
-	
-	# XFCE Icons, GTK and WM themes
-	xfconf-query -c xsettings -p /Net/IconThemeName -s "Tela-circle-manjaro-dark";
-	xfconf-query -c xsettings -n -p /Net/FallbackIconTheme -t "string" -s "Papirus";
-	xfconf-query -c xsettings -p /Net/ThemeName -s "Kripton";
-	xfconf-query -c xfwm4 -p /general/theme -s "Kripton";
-	
-	# Set panel transparency in percentage (the last option), position to bottom, lock the panel, Force panel redraw by toggling background-style
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-rgba -t double -t double -t double -t double -s 0.00 -s 0.00 -s 0.00 -s 0.00;
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/position-locked -t bool -s false;
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/position -t string -s "p=8;x=683;y=749";
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/position-locked -t bool -s true;
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-style -t int -s 0;
-	xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-style -t int -s 1;
-
-	
-	# Set keyboard shorcuts
-	xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/<Shift><Alt>k" -t string -s "flameshot gui";
-	xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/<Shift><Alt>d" -t string -s "flameshot gui -d 5000";
-	
-	# Set desktop wallpaper, hide icons
-	xfconf-query -c xfce4-desktop -n -p /backdrop/screen0/monitorLVDS-1/workspace0/last-image -t string -s "$wallpapersdir"/Wallhaven/wallhaven-13vym3.jpg;
-	xfconf-query -c xfce4-desktop -n -p /desktop-icons/style -t int -s 0;
-	
-	# Center all application windows
-	xfconf-query -c xfwm4 -n -p /general/placement_mode -t string -s "center";
-	xfconf-query -c xfwm4 -n -p /general/placement_ratio -t int -s "100";
-	xfconf-query -c xfwm4 -n -p /general/show_dock_shadow -t bool -s false;
-	
-	# Enable notifications log, log level "always"
-	xfconf-query -c xfce4-notifyd -n -p /notification-log -t bool -s true;
-	xfconf-query -c xfce4-notifyd -n -p /log-level -t int -s 1;
-	xfconf-query -c xfce4-notifyd -n -p /log-level-apps -t int -s 0;
-	
-	# When a window raises itself, switch to window's workspace
-	xfconf-query -c xfwm4 -n -p /general/activate_action -t string -s switch;
-	
-	# Settings Manager > Appearance > Fonts > Default Font
-	xfconf-query -c xsettings -n -p /Gtk/FontName -t string -s "Noto Sans 10"
-	
-	# Settings Manager > Appearance > Fonts > Default Monospace Font
-	xfconf-query -c xsettings -n -p /Gtk/MonospaceFontName -t string -s "Noto Sans Mono 10"
-	
-	# Settings Manager > Window Manager > Title Font
-	xfconf-query -c xfwm4 -n -p /general/title_font -t string -s "Noto Sans Bold 9"
-	
-	# Settings Manager > Window Manager > Button Layout
-	xfconf-query -c xfwm4 -n -p /general/button_layout -t string -s "O|HMC"
-	
-	# xfce4-screensaver inhibit screensaver for fullscreen applications, set personal slideshow and add directory location, set idle activation delay
-	xfconf-query -c xfce4-screensaver -n -p /saver/enabled -t bool -s true
-	xfconf-query -c xfce4-screensaver -n -p /saver/idle-activation/delay -t int -s 5
-	xfconf-query -c xfce4-screensaver -n -p /saver/fullscreen-inhibit -t bool -s true
-	xfconf-query -c xfce4-screensaver -n -p /saver/themes/list -t string -s "screensavers-xfce-personal-slideshow" -a
-	xfconf-query -c xfce4-screensaver -n -p /screensavers/xfce-personal-slideshow/arguments -t string -s "--location='$wallpapersdir'"
-	xfconf-query -c xfce4-screensaver -n -p /screensavers/xfce-personal-slideshow/location -t string -s "$wallpapersdir"
-	xfconf-query -c xfce4-screensaver -n -p /lock/enabled -t bool -s true
-	xfconf-query -c xfce4-screensaver -n -p /lock/saver-activation/delay -t int -s 10
-
-	cd /usr/share/themes && sudo rm -rf Daloa Bright Default-hdpi Default-xhdpi Kokodi Moheli Retro Smoke "ZOMG-PONIES!"
-	
+	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty micro pipewire-pulse brightnessctl --noconfirm --needed
+	sudo pamac build ly --no-confirm
+	sudo systemctl enable ly
 }
 
 function setVariables() {
 	snapshotsdir=""
+	#If nothing is passed, default to sway
+	desktopEnvironment="sway"
 
 	printf "\nPlease, insert your snapshots directory:\n"
 	read snapshotsdir
+
+	printf "\nPlease, insert the desired desktop environment: xfce, i3, sway or gnome (default sway)\n"
+	read desktopEnvironment
+}
+
+function desktopEnvironmentSetup() {
+	printMessage "$1"
+
+	[[ $desktopEnvironment == "i3" ]] && {
+		printMessage "You choose $desktopEnvironment. Installing environment"
+		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinit xorg-xinput lxappearance xclip xfce4-notifyd --no-confirm
+		# Export $XDG_DATA_DIRS on i3 and XFCE to better integrate Flatpaks .desktop files
+		printf "export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n" >> $HOME/.zshenv
+	}
 	
+	[[ $desktopEnvironment == "xfce" ]] && {
+		printMessage "You choose $desktopEnvironment. Installing and configuring environment"
+		sudo pamac install xfce4 xfce4-whisker-menu xfce4-netload-plugin xfce4-systemload-plugin xfce4-pulseaudio-plugin --no-confirm
+		sudo pamac build xfce4-dockbarx-plugin --no-confirm
+	
+		# Set keyboard shorcuts
+		xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/Super_L" -t string -s "xfce4-popup-whiskermenu";
+		
+		# Disable saved sessions
+		xfconf-query -c xfce4-session -p /general/SaveOnExit -n -t bool -s false
+		
+		# Enable tap touchpad to click and change acceleration
+		xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Properties/libinput_Tapping_Enabled -t int -s 1
+		xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Acceleration -t double -s 9.0
+	
+		# Open new thunar instances as tabs, maximize Thunar, hide devices and etc
+		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true;
+		xfconf-query -c thunar -n -p /last-location-bar -t string -s ThunarLocationButtons;
+		xfconf-query -c thunar -n -p /last-window-maximized -t bool -s true;
+		xfconf-query -c thunar -n -p /misc-thumbnail-mode -t string -s THUNAR_THUMBNAIL_MODE_ALWAYS;
+		
+		# XFCE Icons, GTK and WM themes
+		xfconf-query -c xsettings -p /Net/IconThemeName -s "Tela-circle-manjaro-dark";
+		xfconf-query -c xsettings -n -p /Net/FallbackIconTheme -t "string" -s "Papirus";
+		xfconf-query -c xsettings -p /Net/ThemeName -s "Kripton";
+		xfconf-query -c xfwm4 -p /general/theme -s "Kripton";
+		
+		# Set panel transparency in percentage (the last option), position to bottom, lock the panel, Force panel redraw by toggling background-style
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-rgba -t double -t double -t double -t double -s 0.00 -s 0.00 -s 0.00 -s 0.00;
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/position-locked -t bool -s false;
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/position -t string -s "p=8;x=683;y=749";
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/position-locked -t bool -s true;
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-style -t int -s 0;
+		xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-style -t int -s 1;
+			
+		# Set keyboard shorcuts
+		xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/<Shift><Alt>k" -t string -s "flameshot gui";
+		xfconf-query -c xfce4-keyboard-shortcuts -n -p "/commands/custom/<Shift><Alt>d" -t string -s "flameshot gui -d 5000";
+		
+		# Set desktop wallpaper, hide icons
+		xfconf-query -c xfce4-desktop -n -p /backdrop/screen0/monitorLVDS-1/workspace0/last-image -t string -s "$wallpapersdir"/Wallhaven/wallhaven-13vym3.jpg;
+		xfconf-query -c xfce4-desktop -n -p /desktop-icons/style -t int -s 0;
+		
+		# Center all application windows
+		xfconf-query -c xfwm4 -n -p /general/placement_mode -t string -s "center";
+		xfconf-query -c xfwm4 -n -p /general/placement_ratio -t int -s "100";
+		xfconf-query -c xfwm4 -n -p /general/show_dock_shadow -t bool -s false;
+		
+		# Enable notifications log, log level "always"
+		xfconf-query -c xfce4-notifyd -n -p /notification-log -t bool -s true;
+		xfconf-query -c xfce4-notifyd -n -p /log-level -t int -s 1;
+		xfconf-query -c xfce4-notifyd -n -p /log-level-apps -t int -s 0;
+		
+		# When a window raises itself, switch to window's workspace
+		xfconf-query -c xfwm4 -n -p /general/activate_action -t string -s switch;
+		
+		# Settings Manager > Appearance > Fonts > Default Font
+		xfconf-query -c xsettings -n -p /Gtk/FontName -t string -s "Noto Sans 10"
+		
+		# Settings Manager > Appearance > Fonts > Default Monospace Font
+		xfconf-query -c xsettings -n -p /Gtk/MonospaceFontName -t string -s "Noto Sans Mono 10"
+		
+		# Settings Manager > Window Manager > Title Font
+		xfconf-query -c xfwm4 -n -p /general/title_font -t string -s "Noto Sans Bold 9"
+		
+		# Settings Manager > Window Manager > Button Layout
+		xfconf-query -c xfwm4 -n -p /general/button_layout -t string -s "O|HMC"
+		
+		# xfce4-screensaver inhibit screensaver for fullscreen applications, set personal slideshow and add directory location, set idle activation delay
+		xfconf-query -c xfce4-screensaver -n -p /saver/enabled -t bool -s true
+		xfconf-query -c xfce4-screensaver -n -p /saver/idle-activation/delay -t int -s 5
+		xfconf-query -c xfce4-screensaver -n -p /saver/fullscreen-inhibit -t bool -s true
+		xfconf-query -c xfce4-screensaver -n -p /saver/themes/list -t string -s "screensavers-xfce-personal-slideshow" -a
+		xfconf-query -c xfce4-screensaver -n -p /screensavers/xfce-personal-slideshow/arguments -t string -s "--location='$wallpapersdir'"
+		xfconf-query -c xfce4-screensaver -n -p /screensavers/xfce-personal-slideshow/location -t string -s "$wallpapersdir"
+		xfconf-query -c xfce4-screensaver -n -p /lock/enabled -t bool -s true
+		xfconf-query -c xfce4-screensaver -n -p /lock/saver-activation/delay -t int -s 10
+
+		cd /usr/share/themes && sudo rm -rf Daloa Bright Default-hdpi Default-xhdpi Kokodi Moheli Retro Smoke "ZOMG-PONIES!"
+		cd $HOME
+		printf "export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n" >> $HOME/.zshenv
+	}
+	
+	[[ $desktopEnvironment == "gnome" ]] && {
+		printMessage "You choose $desktopEnvironment. Installing environment"
+		sudo pamac install gnome-shell gnome-control-center gnome-tweaks wl-clipboard --no-confirm
+	}
+
+	[[ $desktopEnvironment == "sway" ]] && {
+		printMessage "You choose $desktopEnvironment. Installing environment"
+		sudo pamac install sway waybar wofi grim mako xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
+		# Some Wayland programs reads the current desktop variable to identify sway properly
+		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
+	}
 }
 
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install materia-gtk-theme papirus-icon-theme qt5ct qt5-styleplugins aria2 foliate evince code micro xclip copyq gcolor3 flameshot hardinfo neofetch bpytop gnome-disk-utility gnome-calculator firefox-i18n-pt-br thunderbird-i18n-pt-br obs-studio youtube-dl pavucontrol pulseaudio-alsa steam-manjaro zsh git github-cli mpv ttf-dejavu ttf-meslo-nerd-font-powerlevel10k noto-fonts-cjk noto-fonts-emoji ristretto gnupg openssh gvfs-mtp android-tools android-udev ffmpegthumbnailer gnome-epub-thumbnailer tumbler thunar-archive-plugin thunar-volman file-roller unrar xdg-user-dirs lightdm-gtk-greeter-settings pamac-flatpak-plugin ventoy appimagelauncher xfce4-notifyd brightnessctl polkit-gnome --no-confirm
-
-	printf "export XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\n" >> $HOME/.zprofile
-	sudo flatpak override --env=GTK_THEME=Kripton
-	flatpak install telegram freetube libreoffice -y
+	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 docker neofetch bpytop gnome-disk-utility thunderbird-i18n-pt-br zsh github-cli youtube-dl pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer ristretto thunar-volman thunar-archive-plugin file-roller xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	
+	flatpak install firefox telegram flameshot libreoffice marktext evince freetube foliate calculator codium insomnia celluloid obs steam minetest -y
+	flatpak install proton-GE
+	
+	# Grants Telegram access to $HOME directory to be able to send files in-app
+	sudo flatpak override --filesystem=home org.telegram.desktop
+	# Grants access to themes and icons inside $HOME directory to set the GTK theme
+	sudo flatpak override --filesystem=~/.themes --filesystem=~/.icons --env=GTK_THEME=Kripton
+	
 	
 }
 
@@ -209,7 +236,17 @@ function zshTheming() {
 	
 }
 
+# --------------------------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------------------------- #
+# -------------------------------------Executing functions------------------------------------- #
+# --------------------------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------------------------- #
+
+initialSystemSetup "Change mirrors branch if needed, upgrade system and installs basic programs"
+
 setVariables
+
+desktopEnvironmentSetup "Installing Desktop Environment"
 
 installPrograms "Installing Programs"
 
