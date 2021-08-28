@@ -13,8 +13,6 @@ function initialSystemSetup() {
 	}
 
 	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty micro pipewire-pulse brightnessctl --noconfirm --needed
-	sudo pamac build ly --no-confirm
-	sudo systemctl enable ly
 
 	# Making some directories and exporting variables to easy setup later
 	mkdir -p $HOME/.config/{zsh,zim,nvm} $HOME/.local/{bin,share}
@@ -22,9 +20,9 @@ function initialSystemSetup() {
 	printf "export XDG_CONFIG_HOME=$HOME/.config\n" >> $HOME/.zshenv
 	printf "export XDG_CACHE_HOME=$HOME/.cache\n" >> $HOME/.zshenv
 	printf "export XDG_DATA_HOME=$HOME/.local/share\n" >> $HOME/.zshenv
-	printf "export ZDOTDIR=$XDG_CONFIG_HOME/zsh\n" >> $HOME/.zshenv
-	printf "export HISTFILE=$XDG_CONFIG_HOME/zsh/zhistory\n" >> $HOME/.zshenv
-	printf "export ZIM_HOME=$XDG_CONFIG_HOME/zim\n" >> $HOME/.zshenv
+	printf "export ZDOTDIR=$HOME/.config/zsh\n" >> $HOME/.zshenv
+	printf "export HISTFILE=$HOME/.config/zsh/zhistory\n" >> $HOME/.zshenv
+	printf "export ZIM_HOME=$HOME/.config/zim\n" >> $HOME/.zshenv
 	
 }
 
@@ -33,7 +31,7 @@ function setVariables() {
 	#If nothing is passed, default to sway
 	desktopEnvironment="sway"
 
-	printf "\nPlease, insert your snapshots directory:\n"
+	printf "\nPlease, insert your snapshots directory (leave empty to skip snapshots creation):\n"
 	read snapshotsdir
 
 	printf "\nPlease, insert the desired desktop environment: xfce, i3, sway or gnome (default sway)\n"
@@ -135,7 +133,8 @@ function desktopEnvironmentSetup() {
 	
 	[[ $desktopEnvironment == "gnome" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install gnome-shell gnome-control-center gnome-tweaks wl-clipboard --no-confirm
+		sudo pamac install gdm gnome-control-center gnome-tweaks nautilus eog wl-clipboard --no-confirm
+		sudo systemctl enable gdm
 	}
 
 	[[ $desktopEnvironment == "sway" ]] && {
@@ -144,12 +143,19 @@ function desktopEnvironmentSetup() {
 		# Some Wayland programs reads the current desktop variable to identify sway properly
 		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
 	}
+
+	[[ $desktopEnvironment != "gnome" ]] && {
+		sudo pamac build ly --no-confirm
+		sudo systemctl enable ly
+
+		sudo pamac install ristretto thunar-volman thunar-archive-plugin --no-confirm
+	}
 }
 
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 docker neofetch bpytop gnome-disk-utility thunderbird-i18n-pt-br zsh github-cli youtube-dl pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer ristretto thunar-volman thunar-archive-plugin file-roller xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 docker neofetch bpytop gnome-disk-utility thunderbird-i18n-pt-br zsh github-cli youtube-dl pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
 	flatpak install firefox telegram flameshot libreoffice marktext evince freetube foliate calculator codium insomnia celluloid obs steam minetest -y
 	flatpak install proton-GE
