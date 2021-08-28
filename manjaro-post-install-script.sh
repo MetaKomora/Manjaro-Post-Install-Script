@@ -145,6 +145,11 @@ function desktopEnvironmentSetup() {
 		gsettings set org.gnome.desktop.interface monospace-font-name 'Noto Sans Mono 10'
 		gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans Bold 11'
 
+		# Set themes
+		gsettings set org.gnome.desktop.interface gtk-theme 'Kripton'
+		gsettings set org.gnome.desktop.interface icon-theme 'Tela-circle-manjaro-dark'
+		gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
+
 		# Mouse and Touchpad configurations
 		gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
 		gsettings set org.gnome.desktop.peripherals.touchpad speed 0.85
@@ -153,6 +158,11 @@ function desktopEnvironmentSetup() {
 
 		# Open Nautilus maximized
 		gsettings set org.gnome.nautilus.window-state maximized true
+
+		# Set FileChooser configurations
+		gsettings set org.gtk.Settings.FileChooser show-hidden true
+		gsettings set org.gtk.Settings.FileChooser sort-directories-first true
+		gsettings set org.gtk.Settings.FileChooser window-size "(1100, 670)"
 
 		# Set 4 static workspaces
 		gsettings set org.gnome.mutter dynamic-workspaces false
@@ -163,11 +173,6 @@ function desktopEnvironmentSetup() {
 		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-2 ['<Shift><Super>at']
 		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-3 ['<Shift><Super>numbersign']
 		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-4 ['<Shift><Super>dollar']
-		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 ['<Super>1']
-		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 ['<Super>2']
-		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 ['<Super>3']
-		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-4 ['<Super>4']
-		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-4 ['<Super>5']
 		gsettings set org.gnome.desktop.wm.keybindings show-desktop ['<Primary><Alt>d']
 	}
 
