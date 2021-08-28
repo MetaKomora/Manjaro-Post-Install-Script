@@ -50,7 +50,7 @@ function desktopEnvironmentSetup() {
 	
 	[[ $desktopEnvironment == "xfce" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing and configuring environment"
-		sudo pamac install xfce4 xfce4-whisker-menu xfce4-netload-plugin xfce4-systemload-plugin xfce4-pulseaudio-plugin --no-confirm
+		sudo pamac install xfce4 xfce4-whiskermenu-plugin xfce4-netload-plugin xfce4-systemload-plugin xfce4-pulseaudio-plugin --no-confirm
 		sudo pamac build xfce4-dockbarx-plugin --no-confirm
 	
 		# Set keyboard shorcuts
