@@ -135,6 +135,40 @@ function desktopEnvironmentSetup() {
 		printMessage "You choose $desktopEnvironment. Installing environment"
 		sudo pamac install gdm gnome-control-center gnome-tweaks nautilus eog wl-clipboard --no-confirm
 		sudo systemctl enable gdm
+
+		# Set keyboard layout
+		gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'br')]"
+
+		# Font Configuration
+		gsettings set org.gnome.desktop.interface font-name 'Noto Sans 11'
+		gsettings set org.gnome.desktop.interface document-font-name 'Noto Sans 11'
+		gsettings set org.gnome.desktop.interface monospace-font-name 'Noto Sans Mono 10'
+		gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans Bold 11'
+
+		# Mouse and Touchpad configurations
+		gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
+		gsettings set org.gnome.desktop.peripherals.touchpad speed 0.85
+		gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click true
+		gsettings set org.gnome.desktop.peripherals.mouse speed 0.5
+
+		# Open Nautilus maximized
+		gsettings set org.gnome.nautilus.window-state maximized true
+
+		# Set 4 static workspaces
+		gsettings set org.gnome.mutter dynamic-workspaces false
+		gsetinggs set org.gnome.desktop.wm.preferences num-workspaces 4
+
+		# Set keyboard shortcuts to workspaces
+		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-1 ['<Shift><Super>exclam']
+		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-2 ['<Shift><Super>at']
+		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-3 ['<Shift><Super>numbersign']
+		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-4 ['<Shift><Super>dollar']
+		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 ['<Super>1']
+		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 ['<Super>2']
+		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 ['<Super>3']
+		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-4 ['<Super>4']
+		gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-4 ['<Super>5']
+		gsettings set org.gnome.desktop.wm.keybindings show-desktop ['<Primary><Alt>d']
 	}
 
 	[[ $desktopEnvironment == "sway" ]] && {
@@ -157,7 +191,7 @@ function installPrograms() {
 
 	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 docker neofetch bpytop gnome-disk-utility thunderbird-i18n-pt-br zsh github-cli youtube-dl pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
-	flatpak install firefox telegram flameshot libreoffice marktext evince freetube foliate calculator codium insomnia celluloid obs steam minetest -y
+	flatpak install org.mozilla.firefox telegram flameshot org.libreoffice.LibreOffice marktext evince freetube foliate org.gnome.Calculator codium insomnia celluloid com.obsproject.Studio com.valvesoftware.Steam minetest -y
 	flatpak install proton-GE
 	
 	# Grants Telegram access to $HOME directory to be able to send files in-app
@@ -172,11 +206,13 @@ function devEnvironmentSetup() {
 	printMessage "$1"
 
 	printf "\nInstalling NVM and latest node LTS\n"
+	cd $HOME/.config/nvm
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
 	source $HOME/.config/zsh/.zshrc
 	nvm install --lts
-
+	cd $HOME
+	
 	# Adding $USER to docker group to use docker rootless
 	sudo usermod -a -G docker $USER	
 }
