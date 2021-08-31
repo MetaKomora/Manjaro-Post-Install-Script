@@ -168,6 +168,9 @@ function desktopEnvironmentSetup() {
 		gsettings set org.gnome.mutter dynamic-workspaces false
 		gsetinggs set org.gnome.desktop.wm.preferences num-workspaces 4
 
+		# alt+tab switch between programs only on current workspace
+		gsettings set org.gnome.shell.app-switcher current-workspace-only true
+
 		# Set keyboard shortcuts to workspaces
 		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-1 ['<Shift><Super>exclam']
 		gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-2 ['<Shift><Super>at']
