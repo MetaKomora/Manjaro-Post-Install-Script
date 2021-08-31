@@ -149,6 +149,7 @@ function desktopEnvironmentSetup() {
 		gsettings set org.gnome.desktop.interface gtk-theme 'Kripton'
 		gsettings set org.gnome.desktop.interface icon-theme 'Tela-circle-manjaro-dark'
 		gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
+		gsettings set org.gnome.desktop.wm.preferences theme "Kripton"
 
 		# Mouse and Touchpad configurations
 		gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
