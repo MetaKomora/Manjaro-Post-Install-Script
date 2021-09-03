@@ -17,25 +17,28 @@ function initialSystemSetup() {
 	# Making some directories and exporting variables to easy setup later
 	mkdir -p $HOME/.config/{zsh,zim,nvm} $HOME/.local/{bin,share}
 
-	printf "export XDG_CONFIG_HOME=$HOME/.config\n" >> $HOME/.zshenv
-	printf "export XDG_CACHE_HOME=$HOME/.cache\n" >> $HOME/.zshenv
-	printf "export XDG_DATA_HOME=$HOME/.local/share\n" >> $HOME/.zshenv
-	printf "export ZDOTDIR=$HOME/.config/zsh\n" >> $HOME/.zshenv
-	printf "export HISTFILE=$HOME/.config/zsh/zhistory\n" >> $HOME/.zshenv
-	printf "export ZIM_HOME=$HOME/.config/zim\n" >> $HOME/.zshenv
+	printf 'export XDG_CONFIG_HOME=$HOME/.config\n' >> $HOME/.zshenv
+	printf 'export XDG_CACHE_HOME=$HOME/.cache\n' >> $HOME/.zshenv
+	printf 'export XDG_DATA_HOME=$HOME/.local/share\n' >> $HOME/.zshenv
+	printf 'export ZDOTDIR=$HOME/.config/zsh\n' >> $HOME/.zshenv
+	printf 'export HISTFILE=$HOME/.config/zsh/zhistory\n' >> $HOME/.zshenv
+	printf 'export ZIM_HOME=$HOME/.config/zim\n' >> $HOME/.zshenv
 	
 }
 
 function setVariables() {
 	snapshotsdir=""
-	#If nothing is passed, default to sway
-	desktopEnvironment="sway"
-
+	
 	printf "\nPlease, insert your snapshots directory (leave empty to skip snapshots creation):\n"
 	read snapshotsdir
 
 	printf "\nPlease, insert the desired desktop environment: xfce, i3, sway or gnome (default sway)\n"
 	read desktopEnvironment
+
+	[[ -z $desktopEnvironment ]] && {
+		#If nothing is passed, default to sway
+		desktopEnvironment="sway"
+	}
 }
 
 function desktopEnvironmentSetup() {
@@ -45,7 +48,7 @@ function desktopEnvironmentSetup() {
 		printMessage "You choose $desktopEnvironment. Installing environment"
 		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinit xorg-xinput lxappearance xclip xfce4-notifyd --no-confirm
 		# Export $XDG_DATA_DIRS on i3 and XFCE to better integrate Flatpaks .desktop files
-		printf "export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n" >> $HOME/.zshenv
+		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
 	}
 	
 	[[ $desktopEnvironment == "xfce" ]] && {
@@ -128,7 +131,7 @@ function desktopEnvironmentSetup() {
 
 		cd /usr/share/themes && sudo rm -rf Daloa Bright Default-hdpi Default-xhdpi Kokodi Moheli Retro Smoke "ZOMG-PONIES!"
 		cd $HOME
-		printf "export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n" >> $HOME/.zshenv
+		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
 	}
 	
 	[[ $desktopEnvironment == "gnome" ]] && {
