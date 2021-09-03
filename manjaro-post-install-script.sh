@@ -65,12 +65,6 @@ function desktopEnvironmentSetup() {
 		# Enable tap touchpad to click and change acceleration
 		xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Properties/libinput_Tapping_Enabled -t int -s 1
 		xfconf-query -c pointers -n -p /SynPS2_Synaptics_TouchPad/Acceleration -t double -s 9.0
-	
-		# Open new thunar instances as tabs, maximize Thunar, hide devices and etc
-		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true;
-		xfconf-query -c thunar -n -p /last-location-bar -t string -s ThunarLocationButtons;
-		xfconf-query -c thunar -n -p /last-window-maximized -t bool -s true;
-		xfconf-query -c thunar -n -p /misc-thumbnail-mode -t string -s THUNAR_THUMBNAIL_MODE_ALWAYS;
 		
 		# XFCE Icons, GTK and WM themes
 		xfconf-query -c xsettings -p /Net/IconThemeName -s "Tela-circle-manjaro-dark";
@@ -195,6 +189,11 @@ function desktopEnvironmentSetup() {
 		sudo systemctl enable ly
 
 		sudo pamac install ristretto thunar-volman thunar-archive-plugin --no-confirm
+
+		# Open new Thunar instances as tabs, view location bar as buttons, hide menu bar
+		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true
+		xfconf-query -c thunar -n -p /last-location-bar -t string -s "ThunarLocationButtons"
+		xfconf-query -c thunar -n -p /last-menubar-visible -t bool -s false
 	}
 }
 
@@ -218,12 +217,11 @@ function devEnvironmentSetup() {
 	printMessage "$1"
 
 	printf "\nInstalling NVM and latest node LTS\n"
-	cd $HOME/.config/nvm
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
-	source $HOME/.config/zsh/.zshrc
+	mv $HOME/.nvm/* $HOME/.config/nvm
+	rmdir $HOME/.nvm
 	nvm install --lts
-	cd $HOME
 	
 	# Adding $USER to docker group to use docker rootless
 	sudo usermod -a -G docker $USER	
