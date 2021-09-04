@@ -15,7 +15,7 @@ function initialSystemSetup() {
 	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty micro pipewire-pulse brightnessctl --noconfirm --needed
 
 	# Making some directories and exporting variables to easy setup later
-	mkdir -p $HOME/.config/{zsh,zim,nvm} $HOME/.local/{bin,share}
+	mkdir -p $HOME/.config/{zsh,zim} $HOME/.local/{bin,share}
 
 	printf 'export XDG_CONFIG_HOME=$HOME/.config\n' >> $HOME/.zshenv
 	printf 'export XDG_CACHE_HOME=$HOME/.cache\n' >> $HOME/.zshenv
@@ -218,10 +218,13 @@ function devEnvironmentSetup() {
 
 	printf "\nInstalling NVM and latest node LTS\n"
 	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
-	mv $HOME/.nvm/* $HOME/.config/nvm
-	rmdir $HOME/.nvm
+
+	# Export $NVM_DIR temporarily to use NVM commands to install Node
+	export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 	nvm install --lts
+	nvm alias default stable
+	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
+	mv $HOME/.nvm $HOME/.config/nvm
 	
 	# Adding $USER to docker group to use docker rootless
 	sudo usermod -a -G docker $USER	
