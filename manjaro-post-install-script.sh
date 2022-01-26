@@ -46,7 +46,7 @@ function desktopEnvironmentSetup() {
 
 	[[ $desktopEnvironment == "i3" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinit xorg-xinput lxappearance xclip xfce4-notifyd --no-confirm
+		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinput lxappearance xclip dunst --no-confirm
 		# Export $XDG_DATA_DIRS on i3 and XFCE to better integrate Flatpaks .desktop files
 		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
 	}
@@ -179,7 +179,7 @@ function desktopEnvironmentSetup() {
 
 	[[ $desktopEnvironment == "sway" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install sway waybar wofi grim mako xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
+		sudo pamac install sway waybar rofi grim dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
 		# Some Wayland programs reads the current desktop variable to identify sway properly
 		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
 	}
@@ -200,9 +200,9 @@ function desktopEnvironmentSetup() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 docker neofetch bpytop gnome-disk-utility thunderbird-i18n-pt-br zsh github-cli youtube-dl pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	sudo pamac install adapta-gtk-theme papirus-icon-theme firefox-i18n-pt-br aria2 docker neofetch btop gnome-disk-utility gnome-calculator thunderbird-i18n-pt-br zsh github-cli mpv yt-dlp libva-intel-driver pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
-	flatpak install org.mozilla.firefox telegram flameshot org.libreoffice.LibreOffice marktext evince freetube foliate org.gnome.Calculator codium insomnia celluloid com.obsproject.Studio com.valvesoftware.Steam minetest -y
+	flatpak install librewolf telegram discord flameshot org.libreoffice.LibreOffice evince freetube foliate codium insomnia com.obsproject.Studio com.valvesoftware.Steam minetest -y
 	flatpak install proton-GE
 	
 	# Grants Telegram access to $HOME directory to be able to send files in-app
