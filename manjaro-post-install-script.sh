@@ -47,8 +47,12 @@ function desktopEnvironmentSetup() {
 	[[ $desktopEnvironment == "i3" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
 		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinput lxappearance xclip dunst --no-confirm
+
 		# Export $XDG_DATA_DIRS on i3 and XFCE to better integrate Flatpaks .desktop files
 		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
+
+		# Remove minimize, maximize and close buttons from programs with CSD
+		gsettings set org.gnome.desktop.wm.preferences button-layout ""
 	}
 	
 	[[ $desktopEnvironment == "xfce" ]] && {
@@ -182,6 +186,9 @@ function desktopEnvironmentSetup() {
 		sudo pamac install sway waybar rofi grim dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
 		# Some Wayland programs reads the current desktop variable to identify sway properly
 		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
+
+		# Remove minimize, maximize and close buttons from programs with CSD
+		gsettings set org.gnome.desktop.wm.preferences button-layout ""
 	}
 
 	[[ $desktopEnvironment != "gnome" ]] && {
@@ -194,16 +201,17 @@ function desktopEnvironmentSetup() {
 		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true
 		xfconf-query -c thunar -n -p /last-location-bar -t string -s "ThunarLocationButtons"
 		xfconf-query -c thunar -n -p /last-menubar-visible -t bool -s false
+
+		gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 	}
 }
 
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install adapta-gtk-theme papirus-icon-theme firefox-i18n-pt-br aria2 docker neofetch btop gnome-disk-utility gnome-calculator thunderbird-i18n-pt-br zsh github-cli mpv yt-dlp libva-intel-driver pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	sudo pamac install adapta-gtk-theme papirus-icon-theme firefox-i18n-pt-br aria2 podman-compose podman-docker neofetch btop gnome-disk-utility gnome-calculator gnome-clocks thunderbird-i18n-pt-br zsh bat github-cli mpv yt-dlp libva-intel-driver pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
-	flatpak install librewolf telegram discord flameshot org.libreoffice.LibreOffice evince freetube foliate codium insomnia com.obsproject.Studio com.valvesoftware.Steam minetest -y
-	flatpak install proton-GE
+	flatpak install flatseal chromium telegram discord flameshot org.libreoffice.LibreOffice evince freetube foliate codium insomnia kooha com.valvesoftware.Steam minetest -y
 	
 	# Grants Telegram access to $HOME directory to be able to send files in-app
 	sudo flatpak override --filesystem=home org.telegram.desktop
@@ -217,21 +225,20 @@ function devEnvironmentSetup() {
 	printMessage "$1"
 
 	printf "\nInstalling NVM and latest node LTS\n"
-	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 
 	# Export $NVM_DIR temporarily to use NVM commands to install Node
 	export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-	nvm install --lts
-	nvm alias default stable
+	nvm install --lts --latest-npm
 	printf '\nexport NVM_DIR="$HOME/.config/nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm\n' >> $HOME/.config/zsh/.zshrc
 	mv $HOME/.nvm $HOME/.config/nvm
+
+	# To search Docker images on docker.io with Podman without using full image link
+	echo 'unqualified-search-registries=["docker.io"]' | sudo tee -a /etc/containers/registries.conf.d/docker.conf
 	
-	# Adding $USER to docker group to use docker rootless
-	sudo usermod -a -G docker $USER	
 }
 
 function userEnvironmentSetup() {
-
 	printMessage "$1"
 	
 	xdg-user-dirs-update
@@ -241,12 +248,6 @@ function userEnvironmentSetup() {
 
 	# Prevents xdg-utils bug which it doesn't open files with Micro on Kitty
 	ln -s /usr/bin/kitty $HOME/.local/bin/xterm
-	
-	cd $HOME/.local/bin
-	curl https://raw.githubusercontent.com/MetaKomora/ytdl-opus-shell/master/ytdl-opus -o ytdl-opus;
-	curl https://raw.githubusercontent.com/MetaKomora/ytmpv/master/ytmpv -o ytmpv;
-	chmod +x ytdl-opus ytmpv
-	cd $HOME
 }
 
 function enableZRAM() {
@@ -324,7 +325,7 @@ printMessage "Please, reboot system to apply changes"
 ############################
 ##### Optional programs ####
 ############################
-# alacarte azote fsearch-git catfish mlocate exfat-utils usbutils deadd-notification-center-bin xfce4-clipman-plugin copyq polybar calibre zeal nnn bat lsd cmus figlet opus-tools pulseaudio-alsa otf-font-awesome gpick gcolor3 audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie gparted dmidecode gdu baobab gnome-font-viewer dbeaver dupeguru grub-customizer bootsplash-theme-manjaro screenkey soundconverter p7zip-full unrar selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug zenity hdsentinel font-manager gucharmap wmctrl xdg-desktop-portal-gtk gnome-epub-thumbnailer wf-recorder qt5ct qt5-styleplugins hardinfo appimagelauncher
+# alacarte azote fsearch-git catfish mlocate exfat-utils usbutils deadd-notification-center-bin xfce4-clipman-plugin copyq polybar calibre zeal nnn bat lsd cmus figlet opus-tools pulseaudio-alsa otf-font-awesome gpick gcolor3 audacity inxi mangohud lib32-mangohud ecm-tools lutris wine-staging discord kdeconnect udiskie gparted dmidecode gdu baobab gnome-font-viewer dbeaver dupeguru bootsplash-theme-manjaro screenkey soundconverter p7zip-full unrar selene-media-converter timeshift xdman persepolis deluge-gtk ytfzf-git fzf ueberzug zenity hdsentinel font-manager gucharmap nwg-look-bin wmctrl gnome-epub-thumbnailer wf-recorder qt5ct qt5-styleplugins hardinfo appimagelauncher
 
 
 # More information:
