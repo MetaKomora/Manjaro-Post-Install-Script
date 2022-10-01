@@ -12,7 +12,7 @@ function initialSystemSetup() {
 		sudo pacman-mirrors -c United_States,Canada -a -B unstable -P https -m rank
 	}
 
-	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty micro pipewire-pulse brightnessctl --noconfirm --needed
+	sudo pacman -Syyu pamac-gtk libpamac-flatpak-plugin polkit-gnome kitty neovim pipewire-pulse brightnessctl --noconfirm --needed
 
 	# Making some directories and exporting variables to easy setup later
 	mkdir -p $HOME/.config/{zsh,zim} $HOME/.local/{bin,share}
@@ -73,8 +73,8 @@ function desktopEnvironmentSetup() {
 		# XFCE Icons, GTK and WM themes
 		xfconf-query -c xsettings -p /Net/IconThemeName -s "Tela-circle-manjaro-dark";
 		xfconf-query -c xsettings -n -p /Net/FallbackIconTheme -t "string" -s "Papirus";
-		xfconf-query -c xsettings -p /Net/ThemeName -s "Kripton";
-		xfconf-query -c xfwm4 -p /general/theme -s "Kripton";
+		xfconf-query -c xsettings -p /Net/ThemeName -s "Kripton-v40";
+		xfconf-query -c xfwm4 -p /general/theme -s "Kripton-v40";
 		
 		# Set panel transparency in percentage (the last option), position to bottom, lock the panel, Force panel redraw by toggling background-style
 		xfconf-query -c xfce4-panel -n -p /panels/panel-1/background-rgba -t double -t double -t double -t double -s 0.00 -s 0.00 -s 0.00 -s 0.00;
@@ -134,7 +134,7 @@ function desktopEnvironmentSetup() {
 	
 	[[ $desktopEnvironment == "gnome" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install gdm gnome-control-center gnome-tweaks nautilus eog wl-clipboard --no-confirm
+		sudo pamac install gdm gnome-control-center gnome-tweaks nautilus wl-clipboard --no-confirm
 		sudo systemctl enable gdm
 
 		# Set keyboard layout
@@ -147,10 +147,10 @@ function desktopEnvironmentSetup() {
 		gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Noto Sans Bold 11'
 
 		# Set themes
-		gsettings set org.gnome.desktop.interface gtk-theme 'Kripton'
+		gsettings set org.gnome.desktop.interface gtk-theme 'Kripton-v40'
 		gsettings set org.gnome.desktop.interface icon-theme 'Tela-circle-manjaro-dark'
 		gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice'
-		gsettings set org.gnome.desktop.wm.preferences theme "Kripton"
+		gsettings set org.gnome.desktop.wm.preferences theme "Kripton-v40"
 
 		# Mouse and Touchpad configurations
 		gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll false
@@ -183,7 +183,7 @@ function desktopEnvironmentSetup() {
 
 	[[ $desktopEnvironment == "sway" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install sway waybar rofi grim dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
+		sudo pamac install sway waybar rofi grim slurp dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
 		# Some Wayland programs reads the current desktop variable to identify sway properly
 		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
 
@@ -195,7 +195,7 @@ function desktopEnvironmentSetup() {
 		sudo pamac build ly --no-confirm
 		sudo systemctl enable ly
 
-		sudo pamac install ristretto thunar-volman thunar-archive-plugin --no-confirm
+		sudo pamac install thunar-volman thunar-archive-plugin --no-confirm
 
 		# Open new Thunar instances as tabs, view location bar as buttons, hide menu bar
 		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true
@@ -209,14 +209,14 @@ function desktopEnvironmentSetup() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install adapta-gtk-theme papirus-icon-theme firefox-i18n-pt-br aria2 podman-compose podman-docker neofetch btop gnome-disk-utility gnome-calculator gnome-clocks thunderbird-i18n-pt-br zsh bat github-cli mpv yt-dlp libva-intel-driver pavucontrol ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 podman-compose podman-docker neofetch btop gnome-disk-utility thunderbird-i18n-pt-br zsh bat yt-dlp libva-intel-driver ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
-	flatpak install flatseal chromium telegram discord flameshot org.libreoffice.LibreOffice evince freetube foliate codium insomnia kooha com.valvesoftware.Steam minetest -y
+	flatpak install flatseal org.mozilla.firefox chromium telegram webcord flameshot copyq org.libreoffice.LibreOffice clocks org.gnome.Calculator evince eog freetube io.mpv.Mpv pavucontrol foliate codium eyedropper insomnia kooha com.valvesoftware.Steam minetest -y
 	
 	# Grants Telegram access to $HOME directory to be able to send files in-app
 	sudo flatpak override --filesystem=home org.telegram.desktop
-	# Grants access to themes and icons inside $HOME directory to set the GTK theme
-	sudo flatpak override --filesystem=~/.themes --filesystem=~/.icons --env=GTK_THEME=Kripton
+	# Grants access to themes and icons inside $HOME directory to set the GTK theme but without forcing it
+	sudo flatpak override --filesystem=~/.themes --filesystem=~/.icons
 	
 	
 }
@@ -248,6 +248,9 @@ function userEnvironmentSetup() {
 
 	# Prevents xdg-utils bug which it doesn't open files with Micro on Kitty
 	ln -s /usr/bin/kitty $HOME/.local/bin/xterm
+
+	# Set Kitty theme
+	kitty +kitten themes "Dark One Nuanced"
 }
 
 function enableZRAM() {
