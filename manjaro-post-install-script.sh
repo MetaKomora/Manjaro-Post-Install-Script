@@ -195,7 +195,7 @@ function desktopEnvironmentSetup() {
 		sudo pamac build ly --no-confirm
 		sudo systemctl enable ly
 
-		sudo pamac install thunar-volman thunar-archive-plugin --no-confirm
+		sudo pamac install thunar-volman thunar-archive-plugin tumbler --no-confirm
 
 		# Open new Thunar instances as tabs, view location bar as buttons, hide menu bar
 		xfconf-query -c thunar -n -p /misc-open-new-window-as-tab -t bool -s true
@@ -209,7 +209,7 @@ function desktopEnvironmentSetup() {
 function installPrograms() {
 	printMessage "$1"
 
-	sudo pamac install adapta-gtk-theme papirus-icon-theme aria2 podman-compose podman-docker neofetch btop gnome-disk-utility thunderbird-i18n-pt-br zsh bat yt-dlp libva-intel-driver ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
+	sudo pamac install adw-gtk3 papirus-icon-theme aria2 podman-compose podman-docker neofetch btop gnome-disk-utility thunderbird-i18n-pt-br zsh bat yt-dlp libva-intel-driver ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
 	flatpak install flatseal org.mozilla.firefox chromium telegram webcord flameshot copyq org.libreoffice.LibreOffice clocks org.gnome.Calculator evince eog freetube io.mpv.Mpv pavucontrol foliate codium eyedropper insomnia kooha com.valvesoftware.Steam minetest -y
 	
