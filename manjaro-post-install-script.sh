@@ -234,6 +234,7 @@ function devEnvironmentSetup() {
 	mv $HOME/.nvm $HOME/.config/nvm
 
 	# To search Docker images on docker.io with Podman without using full image link
+	sudo mkdir -p /etc/containers/registries.conf.d
 	echo 'unqualified-search-registries=["docker.io"]' | sudo tee -a /etc/containers/registries.conf.d/docker.conf
 	
 }
