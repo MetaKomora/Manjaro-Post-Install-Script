@@ -17,12 +17,12 @@ function initialSystemSetup() {
 	# Making some directories and exporting variables to easy setup later
 	mkdir -p $HOME/.config/{zsh,zim} $HOME/.local/{bin,share}
 
-	printf 'export XDG_CONFIG_HOME=$HOME/.config\n' >> $HOME/.zshenv
-	printf 'export XDG_CACHE_HOME=$HOME/.cache\n' >> $HOME/.zshenv
-	printf 'export XDG_DATA_HOME=$HOME/.local/share\n' >> $HOME/.zshenv
-	printf 'export ZDOTDIR=$HOME/.config/zsh\n' >> $HOME/.zshenv
-	printf 'export HISTFILE=$HOME/.config/zsh/zhistory\n' >> $HOME/.zshenv
-	printf 'export ZIM_HOME=$HOME/.config/zim\n' >> $HOME/.zshenv
+	echo "export ZDOTDIR=$HOME/.config/zsh" | sudo tee -a /etc/zsh/zshenv
+	printf 'export XDG_CONFIG_HOME=$HOME/.config\n' >> $HOME/.config/zsh/.zshenv
+	printf 'export XDG_CACHE_HOME=$HOME/.cache\n' >> $HOME/.config/zsh/.zshenv
+	printf 'export XDG_DATA_HOME=$HOME/.local/share\n' >> $HOME/.config/zsh/.zshenv
+	printf 'export HISTFILE=$HOME/.config/zsh/zhistory\n' >> $HOME/.config/zsh/.zshenv
+	printf 'export ZIM_HOME=$HOME/.config/zim\n' >> $HOME/.config/zsh/.zshenv
 	
 }
 
@@ -49,7 +49,7 @@ function desktopEnvironmentSetup() {
 		sudo pamac install i3-gaps rofi polybar picom nitrogen xorg-server xorg-xinput lxappearance xclip dunst --no-confirm
 
 		# Export $XDG_DATA_DIRS on i3 and XFCE to better integrate Flatpaks .desktop files
-		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
+		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.config/zsh/.zshenv
 
 		# Remove minimize, maximize and close buttons from programs with CSD
 		gsettings set org.gnome.desktop.wm.preferences button-layout ""
@@ -129,7 +129,7 @@ function desktopEnvironmentSetup() {
 
 		cd /usr/share/themes && sudo rm -rf Daloa Bright Default-hdpi Default-xhdpi Kokodi Moheli Retro Smoke "ZOMG-PONIES!"
 		cd $HOME
-		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.zshenv
+		printf 'export XDG_DATA_DIRS=$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share\n' >> $HOME/.config/zsh/.zshenv
 	}
 	
 	[[ $desktopEnvironment == "gnome" ]] && {
@@ -185,7 +185,7 @@ function desktopEnvironmentSetup() {
 		printMessage "You choose $desktopEnvironment. Installing environment"
 		sudo pamac install sway waybar rofi grim slurp dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
 		# Some Wayland programs reads the current desktop variable to identify sway properly
-		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.zshenv
+		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.config/zsh/.zshenv
 
 		# Remove minimize, maximize and close buttons from programs with CSD
 		gsettings set org.gnome.desktop.wm.preferences button-layout ""
@@ -242,8 +242,8 @@ function userEnvironmentSetup() {
 	printMessage "$1"
 	
 	xdg-user-dirs-update
-	xdg-mime default micro.desktop text/plain
-	xdg-mime default micro.desktop text/markdown
+	xdg-mime default nvim.desktop text/plain
+	xdg-mime default nvim.desktop text/markdown
 	xdg-mime default org.gnome.Evince.desktop application/pdf
 
 	# Prevents xdg-utils bug which it doesn't open files with Micro on Kitty
@@ -282,10 +282,9 @@ function zshTheming() {
 	# Change shell to ZSH
 	chsh -s /bin/zsh
 	sudo chsh -s /bin/zsh
-	source $HOME/.zshenv
+	source $HOME/.config/zsh/.zshenv
 	curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | zsh
 	printf "zmodule romkatv/powerlevel10k" >> $HOME/.config/zsh/.zimrc
-	printf 'export QT_QPA_PLATFORMTHEME="qt5ct"\n' >> $HOME/.zshenv
 
 	printMessage "Exec 'zimfw install' in a new shell to finish Powerlevel10k theme installation"
 	
