@@ -16,6 +16,7 @@ function initialSystemSetup() {
 
 	# Making some directories and exporting variables to easy setup later
 	mkdir -p $HOME/.config/{zsh,zim} $HOME/.local/{bin,share}
+	sudo mkdir -p /etc/zsh
 
 	echo "export ZDOTDIR=$HOME/.config/zsh" | sudo tee -a /etc/zsh/zshenv
 	printf 'export XDG_CONFIG_HOME=$HOME/.config\n' >> $HOME/.config/zsh/.zshenv
@@ -183,7 +184,7 @@ function desktopEnvironmentSetup() {
 
 	[[ $desktopEnvironment == "sway" ]] && {
 		printMessage "You choose $desktopEnvironment. Installing environment"
-		sudo pamac install sway waybar rofi grim slurp dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
+		sudo pamac install sway swaybg waybar rofi grim slurp dunst xorg-xwayland wl-clipboard xdg-desktop-portal-gtk xdg-desktop-portal-wlr --no-confirm
 		# Some Wayland programs reads the current desktop variable to identify sway properly
 		printf "export XDG_CURRENT_DESKTOP=sway\n" >> $HOME/.config/zsh/.zshenv
 
@@ -211,7 +212,7 @@ function installPrograms() {
 
 	sudo pamac install adw-gtk3 papirus-icon-theme aria2 podman-compose podman-docker neofetch btop gnome-disk-utility thunderbird-i18n-pt-br zsh bat yt-dlp libva-intel-driver ttf-meslo-nerd-font-powerlevel10k noto-fonts noto-fonts-cjk noto-fonts-emoji gvfs-mtp android-tools ffmpegthumbnailer file-roller xdg-utils xdg-user-dirs ventoy rsync stow man-db yad --no-confirm
 	
-	flatpak install flatseal org.mozilla.firefox chromium telegram webcord flameshot copyq org.libreoffice.LibreOffice clocks org.gnome.Calculator evince eog freetube io.mpv.Mpv pavucontrol foliate codium eyedropper insomnia kooha com.valvesoftware.Steam minetest -y
+	flatpak install org.gtk.Gtk3theme.adw-gtk3 org.gtk.Gtk3theme.adw-gtk3-dark flatseal org.mozilla.firefox org.chromium.Chromium org.telegram.desktop webcord flameshot copyq org.libreoffice.LibreOffice clocks org.gnome.Calculator evince org.gnome.eog freetube io.mpv.Mpv pavucontrol foliate codium eyedropper insomnia kooha com.valvesoftware.Steam minetest -y
 	
 	# Grants Telegram access to $HOME directory to be able to send files in-app
 	sudo flatpak override --filesystem=home org.telegram.desktop
